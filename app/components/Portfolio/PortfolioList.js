@@ -1,5 +1,5 @@
-import React from 'react';
-import * as portModel from '../../models/portfolioModel';
+import React from 'react'
+import * as portModel from '../../models/portfolioModel'
 
 class PortfolioList extends React.Component {
 	// With es6, the getInitialState is replaced by the constructor.
@@ -8,13 +8,13 @@ class PortfolioList extends React.Component {
 
 		this.state = {
 			portfolios: [],
-			selectedPortfolio: ""
+			selectedPortfolioName: ""
 		}
 	}
 
 	// componentDidMount lifecycle event called after the component mounts the view
 	componentDidMount() {
-		this.init(this.props);
+		this.init(this.props)
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -22,30 +22,32 @@ class PortfolioList extends React.Component {
 	}
 
 	componentWillUnmount() {
-		console.log(this.state);
+		console.log(this.state)
 	}
 
-	selectPort(portfolioId) {
+	selectPortfolio(portfolio) {
 		// Call passed in function to handle this at a higher level
-		console.log("port selected:", portfolioId)
+		this.setState({ selectedPortfolioName: portfolio.name })
+		this.props.portfolioChanged(portfolio)
 	}
 
 	init(props) {
 		portModel.getPortfolioList()
-			.then((response) => 
-				this.setState({portfolios: response.data, selectedPortfolio: response.data[0].name })
-			)
+			.then((response) => {
+				this.setState({ portfolios: response.data })
+				this.selectPortfolio(response.data[0])
+			})
 	}
 
 	render() {
 		return (
 			<div className="dropdown">
-				<button className="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">{this.state.selectedPortfolio}
+				<button className="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">{this.state.selectedPortfolioName}
 			  <span className="caret"></span></button>
 		    <ul className="dropdown-menu">
 		      {this.state.portfolios.map((repo, index) => {
 		      	return (
-							<li key={index}><a href="#" onClick={() => this.selectPort(repo.id)}>{repo.name}</a></li>
+							<li key={index}><a href="#" onClick={() => this.selectPortfolio(repo)}>{repo.name}</a></li>
 						)
 					})}
 			  </ul>
@@ -54,4 +56,8 @@ class PortfolioList extends React.Component {
 	}
 }
 
-export default PortfolioList;
+PortfolioList.propTypes = {
+	portfolioChanged: React.PropTypes.func.isRequired
+}
+
+export default PortfolioList

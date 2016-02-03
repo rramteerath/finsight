@@ -1,5 +1,5 @@
-import React from 'react';
-import * as portModel from '../../models/portfolioModel';
+import React from 'react'
+import * as portModel from '../../models/portfolioModel'
 import Griddle from 'griddle-react'
 
 class PortGrid extends React.Component {
@@ -17,8 +17,10 @@ class PortGrid extends React.Component {
 		this.init(this.props);
 	}
 
+	// Receive props when they change
 	componentWillReceiveProps(nextProps) {
-
+		if (nextProps.currentPortfolio.id)
+			this.getTransactions(nextProps.currentPortfolio)
 	}
 
 	componentWillUnmount() {
@@ -26,7 +28,12 @@ class PortGrid extends React.Component {
 	}
 
 	init(props) {
-		portModel.getTransactions(1)
+		if (this.props.currentPortfolio.id)
+			this.getTransactions(this.props.currentPortfolio)
+	}
+
+	getTransactions(portfolio) {
+		portModel.getPortfolioTransactions(portfolio.id)
 			.then((response) => 
 				this.setState({transactions: response.data})
 			)
@@ -40,6 +47,10 @@ class PortGrid extends React.Component {
 			</div>
 		)
 	}
+}
+
+PortGrid.propTypes = {
+	currentPortfolio: React.PropTypes.object.isRequired
 }
 
 export default PortGrid;
