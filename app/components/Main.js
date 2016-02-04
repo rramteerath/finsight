@@ -2,6 +2,7 @@
 import React from 'react'
 import PortfolioList from './Portfolio/PortfolioList'
 import PortGrid from './Portfolio/PortGrid'
+import TransEdit from './Transaction/TransEdit'
 import './mainstyle.sass'
  
 // props passed into Main
@@ -34,6 +35,10 @@ class Main extends React.Component {
 
 				<div className="container">
 					<PortGrid currentPortfolio={this.state.currentPortfolio}/>
+				</div>
+
+				<div className="container">
+					<TransEdit />
 				</div>
 			</div>
 		)

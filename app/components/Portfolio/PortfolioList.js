@@ -35,6 +35,8 @@ class PortfolioList extends React.Component {
 		portModel.getPortfolioList()
 			.then((response) => {
 				this.setState({ portfolios: response.data })
+
+				// Select first portfolio
 				this.selectPortfolio(response.data[0])
 			})
 	}
@@ -56,6 +58,7 @@ class PortfolioList extends React.Component {
 	}
 }
 
+// propTypes for validation
 PortfolioList.propTypes = {
 	portfolioChanged: React.PropTypes.func.isRequired
 }

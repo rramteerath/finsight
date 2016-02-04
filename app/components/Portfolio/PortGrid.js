@@ -34,16 +34,16 @@ class PortGrid extends React.Component {
 
 	getTransactions(portfolio) {
 		portModel.getPortfolioTransactions(portfolio.id)
-			.then((response) => 
-				this.setState({transactions: response.data})
-			)
+			.then((response) => {
+				this.setState({transactions: response})
+			})
 	}
 
 	render() {
 		return (
 			<div>
 				<Griddle results={this.state.transactions} tableClassName="table" showFilter={true}
- 				showSettings={true} columns={["executionDate", "quantity", "price", "commission"]}/>
+ 				showSettings={true} columns={["executionDate", "transType", "ticker", "quantity", "price", "commission"]}/>
 			</div>
 		)
 	}
