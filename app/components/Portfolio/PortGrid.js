@@ -1,5 +1,6 @@
 import React from 'react'
 import * as portModel from '../../models/portfolioModel'
+import TransEdit from '../Transaction/TransEdit'
 import Griddle from 'griddle-react'
 
 class PortGrid extends React.Component {
@@ -39,11 +40,24 @@ class PortGrid extends React.Component {
 			})
 	}
 
+	// Called when the transactions in the current portfolio have been updated, added, deleted.
+	handleTransactionsChanged(portfolio) {
+		this.getTransactions(this.props.currentPortfolio)
+	}
+
 	render() {
 		return (
 			<div>
-				<Griddle results={this.state.transactions} tableClassName="table" showFilter={true}
- 				showSettings={true} columns={["executionDate", "transType", "ticker", "quantity", "price", "commission"]}/>
+				<div className="container">
+					<Griddle results={this.state.transactions} tableClassName="table" showFilter={false}
+	 				showSettings={true} columns={["executionDate", "transType", "ticker", "quantity", "price", "commission"]}/>
+				</div>
+
+				<div className="container">
+					<TransEdit 
+						currentPortfolio={this.props.currentPortfolio}
+						transactionsChanged={() => this.handleTransactionsChanged()} />
+				</div>
 			</div>
 		)
 	}

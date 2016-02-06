@@ -1,5 +1,6 @@
 import React from 'react'
 import * as portModel from '../../models/portfolioModel'
+import './PortfolioList.sass'
 
 class PortfolioList extends React.Component {
 	// With es6, the getInitialState is replaced by the constructor.
@@ -43,7 +44,7 @@ class PortfolioList extends React.Component {
 
 	render() {
 		return (
-			<div className="dropdown">
+			<div className="dropdown port-list">
 				<button className="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">{this.state.selectedPortfolioName}
 			  <span className="caret"></span></button>
 		    <ul className="dropdown-menu">

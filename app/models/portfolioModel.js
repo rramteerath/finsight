@@ -19,20 +19,11 @@ export function getPortfolioTransactions(portfolioId) {
 }
 
 function fillModel(transactions, tickers, transTypes) {
-	// Map ticker and trans type names from associated ids for display.
-	return _.map(transactions, (t) => ({
-		"commission": t.commission, 
-		"createdAt": t.createdAt, 
-		"executionDate": t.executionDate, 
-		"id": t.id, 
-		"portfolioId": t.portfolioId, 
-		"price": t.price, 
-		"quantity": t.quantity, 
-		"tickerId": t.tickerId, 
-		"transactionTypeId": t.transactionTypeId, 
-		"updatedAt": t.updatedAt, 
-		"ticker": _.find(tickers, (k) => k.id == t.tickerId).symbol,
-		"transType": _.find(transTypes, (m) => m.id == t.transactionTypeId).name
+	// Get ticker and trans type names from associated ids for display.
+	// Use _.defaults to combine these with the original transactions array
+	return _.map(transactions, (trans) => _.defaults(trans, {
+		"ticker": _.find(tickers, (k) => k.id == trans.tickerId).symbol,
+		"transType": _.find(transTypes, (m) => m.id == trans.transactionTypeId).name
 	}))
 }
 
