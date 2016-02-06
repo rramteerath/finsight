@@ -57,14 +57,14 @@ class TransEdit extends React.Component {
 			"price": this.priceInput.value, 
 			"commission": this.commInput.value,
 			"portfolioId": this.props.currentPortfolio.id
-		} 
-
-		console.log("trans", trans)
+		}
 
 		transactionModel.saveTransaction(trans)
 			.then((res) => {
-				console.log("saved trans", res)
 				this.props.transactionsChanged()
+
+				// Clear fields after save
+				this.edittransform.reset()
 			})
 	}
 
@@ -75,7 +75,7 @@ class TransEdit extends React.Component {
 	render() {
 		return (
 			<div>
-				<form >
+				<form id="edittransform" ref={(ref) => this.edittransform = ref}>
 
 					<div className="row">
 		    		<div className="col-sm-12"><h3>Add/Edit Transaction</h3></div>
