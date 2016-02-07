@@ -2,6 +2,8 @@ import React from 'react'
 import * as tickerModel from '../../models/tickerModel'
 import * as transTypeModel from '../../models/transTypeModel'
 import * as transactionModel from '../../models/transactionModel'
+import axios from 'axios'
+import './TransEdit.sass'
 
 class TransEdit extends React.Component {
 	// With es6, the getInitialState is replaced by the constructor.
@@ -44,6 +46,14 @@ class TransEdit extends React.Component {
 			.then((response) => {
 				this.setState({ allTransTypes: response.data, selectedTransType: response.data[0]})
 			})
+
+		// axios.defaults.headers.common['Cookie'] = '3481%5F0=6BE7358E16EB39BA6744524E06AA2E67; GZIP=1';
+		// axios.get('http://dev.markitondemand.com/MODApis/Api/v2/Quote/json?symbol=MSFT&')
+		// 	.then((res) => console.log("stock data", res))
+	}
+
+	mycallback() {
+		console.log("in my callback")
 	}
 
 	handleSubmit() {
@@ -90,7 +100,7 @@ class TransEdit extends React.Component {
 		    		<div className="col-sm-1">
 							<div className="dropdown">
 								<button className="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">{this.state.selectedTransType.name}
-							  	<span className="caret"></span>
+							  	<span className="caret caret-pos"></span>
 							  </button>
 						    <ul className="dropdown-menu">
 						      {this.state.allTransTypes.map((repo, index) => {

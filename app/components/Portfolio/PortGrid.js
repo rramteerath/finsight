@@ -1,7 +1,8 @@
 import React from 'react'
+import Griddle from 'griddle-react'
 import * as portModel from '../../models/portfolioModel'
 import TransEdit from '../Transaction/TransEdit'
-import Griddle from 'griddle-react'
+import GridEditButtons from './GridEditButtons'
 
 class PortGrid extends React.Component {
 	// With es6, the getInitialState is replaced by the constructor.
@@ -46,11 +47,22 @@ class PortGrid extends React.Component {
 	}
 
 	render() {
+		const colMeta = [
+			{"columnName": "formattedExecDate", "displayName": "Exec Date", "cssClassName": "col-sm-2"},
+			{"columnName": "transType", "displayName": "Type", "cssClassName": "col-sm-1"},
+			{"columnName": "ticker", "displayName": "Ticker", "cssClassName": "col-sm-2"},
+			{"columnName": "quantity", "displayName": "Quantity", "cssClassName": "col-sm-2"},
+			{"columnName": "price", "displayName": "Price", "cssClassName": "col-sm-2"},
+			{"columnName": "commission", "displayName": "Commission", "cssClassName": "col-sm-2"},
+			{"columnName": "editField", "displayName": "", "cssClassName": "col-sm-1", "customComponent": GridEditButtons}
+		]
+
 		return (
 			<div>
 				<div className="container">
-					<Griddle results={this.state.transactions} tableClassName="table" showFilter={false}
-	 				showSettings={true} columns={["executionDate", "transType", "ticker", "quantity", "price", "commission"]}/>
+					<Griddle results={this.state.transactions} columnMetadata={colMeta} 
+					tableClassName="table" showFilter={false} resultsPerPage="10"
+	 				showSettings={true} columns={["formattedExecDate", "transType", "ticker", "quantity", "price", "commission", "editField"]}/>
 				</div>
 
 				<div className="container">

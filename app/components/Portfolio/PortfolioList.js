@@ -35,10 +35,10 @@ class PortfolioList extends React.Component {
 	init(props) {
 		portModel.getPortfolioList()
 			.then((response) => {
-				this.setState({ portfolios: response.data })
+				this.setState({ portfolios: _.sortBy(response.data, (s) => s.id) })
 
 				// Select first portfolio
-				this.selectPortfolio(response.data[0])
+				this.selectPortfolio(_.find(response.data, (i) => i.id == 1))
 			})
 	}
 

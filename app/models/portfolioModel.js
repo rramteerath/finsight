@@ -23,7 +23,9 @@ function fillModel(transactions, tickers, transTypes) {
 	// Use _.defaults to combine these with the original transactions array
 	return _.map(transactions, (trans) => _.defaults(trans, {
 		"ticker": _.find(tickers, (k) => k.id == trans.tickerId).symbol,
-		"transType": _.find(transTypes, (m) => m.id == trans.transactionTypeId).name
+		"transType": _.find(transTypes, (m) => m.id == trans.transactionTypeId).name,
+		"formattedExecDate": new Date(trans.executionDate).toLocaleDateString('en-US'),
+		"editField": ""
 	}))
 }
 
