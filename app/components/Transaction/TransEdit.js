@@ -13,7 +13,8 @@ class TransEdit extends React.Component {
 		this.state = {
 			allTickers: [],
 			allTransTypes: [],
-			selectedTransType: {}
+			selectedTransType: {},
+			buttonLabel: "Add"
 		}
 	}
 
@@ -24,7 +25,14 @@ class TransEdit extends React.Component {
 
 	// Receive props when they change
 	componentWillReceiveProps(nextProps) {
+		if (!nextProps.selectedTransaction.id)
+			return
 
+		console.log(nextProps)
+		this.setState({ buttonLabel: "Edit"})
+		this.dateInput.value = nextProps.selectedTransaction.formattedExecDate
+		this.tickerInput.value = nextProps.selectedTransaction.ticker
+		this.priceInput.value = nextProps.selectedTransaction.price
 	}
 
 	componentWillUnmount() {
@@ -38,6 +46,7 @@ class TransEdit extends React.Component {
 			.then((response) => {
 				this.setState({ allTickers: response.data })
 
+				// Set up auto-complete control - from the jQuery UI controls (http://jqueryui.com/)
 				const tickers = this.state.allTickers.map(t => t.symbol)
 				$( "#tickerAuto" ).autocomplete({source: tickers})
 			})
@@ -137,7 +146,7 @@ class TransEdit extends React.Component {
 		    		</div>
 
 		    		<div className="col-sm-1">
-		    			<button type="button" className="btn btn-success" onClick={() => this.handleSubmit()}>Submit</button>
+		    			<button type="button" className="btn btn-success" onClick={() => this.handleSubmit()}>{this.state.buttonLabel}</button>
 		    		</div>
 		    	</div>
 
@@ -149,6 +158,7 @@ class TransEdit extends React.Component {
 
 TransEdit.propTypes = {
 	currentPortfolio: React.PropTypes.object.isRequired,
+	selectedTransaction: React.PropTypes.object,
 	transactionsChanged: React.PropTypes.func.isRequired
 }
 

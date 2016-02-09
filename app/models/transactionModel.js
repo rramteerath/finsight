@@ -11,3 +11,7 @@ export function saveTransaction(transaction) {
 	else
 		return axios.post(baseUrl + 'trans', transaction)
 }
+
+export function deleteTransaction(transaction) {
+	return axios.delete(baseUrl + 'trans/' + transaction.id)
+}

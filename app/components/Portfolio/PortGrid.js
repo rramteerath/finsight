@@ -1,6 +1,7 @@
 import React from 'react'
 import Griddle from 'griddle-react'
 import * as portModel from '../../models/portfolioModel'
+import * as transModel from '../../models/transactionModel'
 import TransEdit from '../Transaction/TransEdit'
 import GridEditButtons from './GridEditButtons'
 
@@ -10,7 +11,8 @@ class PortGrid extends React.Component {
 		super(props);
 
 		this.state = {
-			transactions: []
+			transactions: [],
+			selectedTransaction: {}
 		}
 	}
 
@@ -46,6 +48,19 @@ class PortGrid extends React.Component {
 		this.getTransactions(this.props.currentPortfolio)
 	}
 
+	handleEditTransaction(trans) {
+		this.setState({selectedTransaction: trans})
+	}
+
+	handleDeleteTransaction(trans) {
+		transModel.deleteTransaction(trans)
+			.then((res) => {
+				// TODO: Check return codes
+				this.getTransactions(this.props.currentPortfolio)
+			})
+	}
+
+
 	render() {
 		const colMeta = [
 			{"columnName": "formattedExecDate", "displayName": "Exec Date", "cssClassName": "col-sm-2"},
@@ -54,7 +69,11 @@ class PortGrid extends React.Component {
 			{"columnName": "quantity", "displayName": "Quantity", "cssClassName": "col-sm-2"},
 			{"columnName": "price", "displayName": "Price", "cssClassName": "col-sm-2"},
 			{"columnName": "commission", "displayName": "Commission", "cssClassName": "col-sm-2"},
-			{"columnName": "editField", "displayName": "", "cssClassName": "col-sm-1", "customComponent": GridEditButtons}
+			{"columnName": "editField", "displayName": "", "cssClassName": "col-sm-1", 
+				"customComponent": GridEditButtons, 
+				"onDeleteClick": this.handleDeleteTransaction.bind(this),
+				"onEditClick": this.handleEditTransaction.bind(this)
+			}
 		]
 
 		return (
@@ -68,6 +87,7 @@ class PortGrid extends React.Component {
 				<div className="container">
 					<TransEdit 
 						currentPortfolio={this.props.currentPortfolio}
+						selectedTransaction={this.state.selectedTransaction}
 						transactionsChanged={() => this.handleTransactionsChanged()} />
 				</div>
 			</div>
