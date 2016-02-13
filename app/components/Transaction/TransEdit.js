@@ -1,9 +1,11 @@
 import React from 'react'
+import Combobox from 'react-widgets/lib/Combobox'
 import * as tickerModel from '../../models/tickerModel'
 import * as transTypeModel from '../../models/transTypeModel'
 import * as transactionModel from '../../models/transactionModel'
 import axios from 'axios'
 import './TransEdit.sass'
+import 'react-widgets/lib/less/react-widgets.less'
 
 class TransEdit extends React.Component {
 	// With es6, the getInitialState is replaced by the constructor.
@@ -14,7 +16,9 @@ class TransEdit extends React.Component {
 			allTickers: [],
 			allTransTypes: [],
 			selectedTransType: {},
-			buttonLabel: "Add"
+			currentTransaction: {},
+			buttonLabel: "Add",
+			mode: ""
 		}
 	}
 
@@ -23,21 +27,49 @@ class TransEdit extends React.Component {
 		this.init(this.props);
 	}
 
+
 	// Receive props when they change
 	componentWillReceiveProps(nextProps) {
 		if (!nextProps.selectedTransaction.id)
 			return
 
-		console.log(nextProps)
-		this.setState({ buttonLabel: "Edit"})
+		if (nextProps.selectedTransaction.id == this.state.currentTransaction.id)
+			return
+
+		// Need this clearing flag when clearing out the state after doing an update and raising
+		// the transactionsChanged event. The componentWillReceiveProps gets called again and
+		// the record that was being edited is reloaded. In this scenario you don't want to reload
+		// the record, just exit out.
+		if (this.state.mode == "clearing") {
+			this.setState({mode: ""})
+			return
+		}
+
+		//if (this.state.keepState)
+		//	return
+
+		// Using a ref to the form elements becuase the onChange event does not fire
+		// with date picker, autocomplete. Plus this way I don't have to write an
+		// onChange event handler for every element. Just get/set the element value
+		// using the ref. Therefore these are uncontrolled compoenets in react speak.
 		this.dateInput.value = nextProps.selectedTransaction.formattedExecDate
 		this.tickerInput.value = nextProps.selectedTransaction.ticker
+		this.quantInput.value = nextProps.selectedTransaction.quantity
+		this.commInput.value = nextProps.selectedTransaction.commission
 		this.priceInput.value = nextProps.selectedTransaction.price
+
+		this.setState({
+			currentTransaction: nextProps.selectedTransaction,
+			selectedTransType: _.find(this.state.allTransTypes, a => a.id == nextProps.selectedTransaction.transactionTypeId),
+			buttonLabel: "Update"
+		})
 	}
+
 
 	componentWillUnmount() {
 
 	}
+
 
 	init(props) {
 		$( "#execdate" ).datepicker()
@@ -53,20 +85,14 @@ class TransEdit extends React.Component {
 
 		transTypeModel.getTransTypeList()
 			.then((response) => {
+				//this.setState({ allTransTypes: response.data.map(i => (i.name) )})
 				this.setState({ allTransTypes: response.data, selectedTransType: response.data[0]})
 			})
-
-		// axios.defaults.headers.common['Cookie'] = '3481%5F0=6BE7358E16EB39BA6744524E06AA2E67; GZIP=1';
-		// axios.get('http://dev.markitondemand.com/MODApis/Api/v2/Quote/json?symbol=MSFT&')
-		// 	.then((res) => console.log("stock data", res))
-	}
-
-	mycallback() {
-		console.log("in my callback")
 	}
 
 	handleSubmit() {
-		const trans = { 
+		const trans = {
+			"id": this.state.currentTransaction.id,
 			"executionDate": this.dateInput.value, 
 			"transactionTypeId": this.state.selectedTransType.id, 
 			"transType": this.state.selectedTransType.name, 
@@ -78,20 +104,37 @@ class TransEdit extends React.Component {
 			"portfolioId": this.props.currentPortfolio.id
 		}
 
+		console.log("trans", trans)
 		transactionModel.saveTransaction(trans)
 			.then((res) => {
 				this.props.transactionsChanged()
 
 				// Clear fields after save
-				this.edittransform.reset()
+				this.handleClear()
 			})
 	}
 
+	handleClear() {
+		console.log("in clear")
+
+		this.edittransform.reset()
+		this.setState(
+			{
+				currentTransaction: {},
+				selectedTransType: this.state.allTransTypes[0],
+				buttonLabel: "Add",
+				mode: "clearing"
+			})
+
+	}
+
 	selectTransType(transType) {
+		console.log("transType", transType)
 		this.setState({selectedTransType: transType})
 	}
 
 	render() {
+
 		return (
 			<div>
 				<form id="edittransform" ref={(ref) => this.edittransform = ref}>
@@ -100,54 +143,59 @@ class TransEdit extends React.Component {
 		    		<div className="col-sm-12"><h3>Add/Edit Transaction</h3></div>
 		    	</div>
 
+					{/* Execution Date */}
 		    	<div className="row">
 		    		<div className="col-sm-2">
 		    			<input type="text" className="form-control" id="execdate" placeholder="date"
 		    				ref={(ref) => this.dateInput = ref}>
 		    			</input>
 		    		</div>
-		    		<div className="col-sm-1">
-							<div className="dropdown">
-								<button className="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">{this.state.selectedTransType.name}
-							  	<span className="caret caret-pos"></span>
-							  </button>
-						    <ul className="dropdown-menu">
-						      {this.state.allTransTypes.map((repo, index) => {
-						      	return (
-											<li key={index}><a href="#" onClick={() => this.selectTransType(repo)}>{repo.name}</a></li>
-										)
-									})}
-							  </ul>
-							</div>
+						
+						{/* Transaction Type */}
+		    		<div className="col-sm-2">
+							<Combobox valueField="id" textField="name"
+								value={this.state.selectedTransType}
+								onChange={val => this.selectTransType(val)}
+								data={this.state.allTransTypes} suggest={true}/>
 		    		</div>
 
-		    		<div className="col-sm-2">
+						{/* Ticker */}
+		    		<div className="col-sm-1">
 		    			<input type="text" className="form-control" id="tickerAuto" placeholder="ticker"
 		    				ref={(ref) => this.tickerInput = ref}>
 		    			</input>
 		    		</div>
 
-		    		<div className="col-sm-2">
+						{/* Quantity */}
+		    		<div className="col-sm-1">
 		    			<input type="text" className="form-control" id="quantity" placeholder="quantity"
-		    				ref={(ref) => this.quantInput = ref}>
+							 ref={(ref) => this.quantInput = ref}>
 		    			</input>
 		    		</div>
 
+						{/* Price */}
 		    		<div className="col-sm-2">
 		    			<input type="text" className="form-control" id="price" placeholder="price"
-		    				ref={(ref) => this.priceInput = ref}>
+								 ref={(ref) => this.priceInput = ref}>
 		    			</input>
 		    		</div>
 
+						{/* Commission */}
 		    		<div className="col-sm-2">
 		    			<input type="text" className="form-control" id="comm" placeholder="commission"
-		    				ref={(ref) => this.commInput = ref}>
+								 ref={(ref) => this.commInput = ref}>
 		    			</input>
 		    		</div>
 
-		    		<div className="col-sm-1">
-		    			<button type="button" className="btn btn-success" onClick={() => this.handleSubmit()}>{this.state.buttonLabel}</button>
-		    		</div>
+						{/* Buttons */}
+		    		<span className="col-sm-2 align-right">
+		    			<button type="button" className="btn btn-success" onClick={() => this.handleSubmit()}>
+		    				{this.state.buttonLabel}
+		    			</button>
+		    			<button type="button" className="btn btn-success padded" onClick={() => this.handleClear()}>
+		    				Clear
+		    			</button>
+		    		</span>
 		    	</div>
 
 	    	</form>
