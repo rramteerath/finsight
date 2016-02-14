@@ -25,13 +25,11 @@ class Main extends React.Component {
 
 	render() {
 		return (
-			<div className="main-container">
-				<nav className="navbar navbar-default" role="navigation">
-					<div className="col-sm-7 col-sm-offset-4" >
-						<span className="header-title">Search by portfolio:</span>
-						<PortfolioList portfolioChanged={(portfolio) => this.handlePortfolioChanged(portfolio)}/>
-					</div>
-				</nav>
+			<div className="container">
+				<div className="well well-sm">
+					<span className="header-title">Search by portfolio:</span>
+					<PortfolioList portfolioChanged={(portfolio) => this.handlePortfolioChanged(portfolio)}/>
+				</div>
 
 				<div>
 					<PortGrid currentPortfolio={this.state.currentPortfolio}/>

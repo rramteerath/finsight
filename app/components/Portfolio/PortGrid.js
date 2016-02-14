@@ -78,13 +78,13 @@ class PortGrid extends React.Component {
 
 		return (
 			<div>
-				<div className="container">
+				<div>
 					<Griddle results={this.state.transactions} columnMetadata={colMeta} 
 					tableClassName="table" showFilter={false} resultsPerPage="10"
 	 				showSettings={true} columns={["formattedExecDate", "transType", "ticker", "quantity", "price", "commission", "editField"]}/>
 				</div>
 
-				<div className="container">
+				<div>
 					<TransEdit 
 						currentPortfolio={this.props.currentPortfolio}
 						selectedTransaction={this.state.selectedTransaction}

@@ -45,7 +45,7 @@ class PortfolioList extends React.Component {
 	render() {
 		return (
 			<div className="dropdown port-list">
-				<button className="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">{this.state.selectedPortfolioName}
+				<button className="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown">{this.state.selectedPortfolioName}
 			  <span className="caret"></span></button>
 		    <ul className="dropdown-menu">
 		      {this.state.portfolios.map((repo, index) => {

@@ -150,7 +150,7 @@ class TransEdit extends React.Component {
 		    				ref={(ref) => this.dateInput = ref}>
 		    			</input>
 		    		</div>
-						
+
 						{/* Transaction Type */}
 		    		<div className="col-sm-2">
 							<Combobox valueField="id" textField="name"
@@ -168,7 +168,7 @@ class TransEdit extends React.Component {
 
 						{/* Quantity */}
 		    		<div className="col-sm-1">
-		    			<input type="text" className="form-control" id="quantity" placeholder="quantity"
+		    			<input type="text" className="form-control" id="quantity" placeholder="shares"
 							 ref={(ref) => this.quantInput = ref}>
 		    			</input>
 		    		</div>
