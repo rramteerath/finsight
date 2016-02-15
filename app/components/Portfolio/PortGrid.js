@@ -4,6 +4,7 @@ import * as portModel from '../../models/portfolioModel'
 import * as transModel from '../../models/transactionModel'
 import TransEdit from '../Transaction/TransEdit'
 import GridEditButtons from './GridEditButtons'
+import '../../styles/globalStyles.sass'
 
 class PortGrid extends React.Component {
 	// With es6, the getInitialState is replaced by the constructor.
@@ -28,7 +29,7 @@ class PortGrid extends React.Component {
 	}
 
 	componentWillUnmount() {
-		console.log(this.state);
+		//console.log(this.state);
 	}
 
 	init(props) {
@@ -65,11 +66,13 @@ class PortGrid extends React.Component {
 		const colMeta = [
 			{"columnName": "formattedExecDate", "displayName": "Exec Date", "cssClassName": "col-sm-2"},
 			{"columnName": "transType", "displayName": "Type", "cssClassName": "col-sm-1"},
-			{"columnName": "ticker", "displayName": "Ticker", "cssClassName": "col-sm-2"},
-			{"columnName": "quantity", "displayName": "Quantity", "cssClassName": "col-sm-2"},
-			{"columnName": "price", "displayName": "Price", "cssClassName": "col-sm-2"},
-			{"columnName": "commission", "displayName": "Commission", "cssClassName": "col-sm-2"},
-			{"columnName": "editField", "displayName": "", "cssClassName": "col-sm-1", 
+			{"columnName": "ticker", "displayName": "Ticker", "cssClassName": "col-sm-1"},
+			{"columnName": "quantity", "displayName": "Quantity", "cssClassName": "col-sm-1 align-right"},
+			{"columnName": "price", "displayName": "Price", "cssClassName": "col-sm-2 align-right"},
+			{"columnName": "commission", "displayName": "Commission", "cssClassName": "col-sm-1 align-right"},
+			{"columnName": "costBasis", "displayName": "Cost Basis", "cssClassName": "col-sm-2 align-right"},
+			{"columnName": "marketValue", "displayName": "Market Val", "cssClassName": "col-sm-1 align-right"},
+			{"columnName": "editField", "displayName": "", "cssClassName": "col-sm-1",
 				"customComponent": GridEditButtons, 
 				"onDeleteClick": this.handleDeleteTransaction.bind(this),
 				"onEditClick": this.handleEditTransaction.bind(this)
@@ -78,10 +81,16 @@ class PortGrid extends React.Component {
 
 		return (
 			<div>
+        <div className="btn-group">
+          <button type="button" className="btn btn-primary">All Time</button>
+          <button type="button" className="btn btn-primary">YTD</button>
+          <button type="button" className="btn btn-primary">QTD</button>
+          <button type="button" className="btn btn-primary">MTD</button>
+        </div>
 				<div>
-					<Griddle results={this.state.transactions} columnMetadata={colMeta} 
-					tableClassName="table" showFilter={false} resultsPerPage="10"
-	 				showSettings={true} columns={["formattedExecDate", "transType", "ticker", "quantity", "price", "commission", "editField"]}/>
+					<Griddle results={this.state.transactions} columnMetadata={colMeta}
+					showFilter={false} resultsPerPage="15" showSettings={true}
+          columns={["formattedExecDate", "transType", "ticker", "quantity", "price", "commission", "costBasis", "marketValue", "editField"]}/>
 				</div>
 
 				<div>

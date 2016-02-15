@@ -10,7 +10,7 @@ import 'react-widgets/lib/less/react-widgets.less'
 class TransEdit extends React.Component {
 	// With es6, the getInitialState is replaced by the constructor.
 	constructor(props) {
-		super(props);
+		super(props)
 
 		this.state = {
 			allTickers: [],
