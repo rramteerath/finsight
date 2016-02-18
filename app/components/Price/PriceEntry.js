@@ -12,7 +12,8 @@ class PriceEntry extends React.Component {
       // TODO: Cache tickers on client
       allTickers: [],
       priceMap: new Map(),
-      date: Date.now()
+      date: Date.now(),
+      prices: []
     }
   }
 
@@ -27,7 +28,18 @@ class PriceEntry extends React.Component {
 
   handleDateEntry() {
     this.setState({date: this.dateInput.value, haveDate: true})
-    this.getTickers()
+    //this.getTickers()
+    priceModel.getPriceEntryList(this.dateInput.value)
+      .then((res) =>{
+        console.log("in date entry", res)
+        this.setState({allTickers: res.tickers, prices: res.prices})
+        this.state.prices.forEach(p => {
+          const priceWithTicker = _.find(this.state.allTickers, i => i.id === p.tickerId)
+          if (priceWithTicker)
+            console.log("symbol", priceWithTicker.symbol)
+            $("#" + priceWithTicker.symbol).val(p.price)
+        })
+      })
   }
 
   getTickers() {
@@ -43,17 +55,29 @@ class PriceEntry extends React.Component {
 
   handleSubmit() {
     this.state.priceMap.forEach((value, key) => {
+      const tickerId = _.find(this.state.allTickers, t => t.symbol == key).id
       const price = {
         "date": this.state.date,
-        "tickerId": _.find(this.state.allTickers, t => t.symbol == key).id,
+        "tickerId": tickerId,
+        "id": _.find(this.state.prices, p => p.tickerId == tickerId).id,
         "price": value
       }
 
-      priceModel.savePrice(price)
-        .then((res) => {
-          // TODO: clear form, state params, etc.
-        })
+      console.log("price", price)
+
+      //priceModel.savePrice(price)
+      //  .then((res) => {
+      //    // TODO: clear form, state params, etc.
+      //  })
     })
+  }
+
+  getPriceForTicker(tickerId) {
+    const price = _.find(this.state.prices, p => p.tickerId == tickerId)
+    if (price)
+      return price.price
+    else
+      return 0
   }
 
   render() {
@@ -87,6 +111,7 @@ class PriceEntry extends React.Component {
                 <label className="control-label col-sm-2">{repo.symbol}</label>
                 <div className="col-sm-2">
                   <input type="text" className="form-control" id={repo.symbol} placeholder="price"
+
                     onChange={(i) => this.handleTextChange(i)}/>
                 </div>
                 <div className="col-sm-8"></div>
