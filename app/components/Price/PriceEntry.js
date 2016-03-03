@@ -30,36 +30,44 @@ class PriceEntry extends React.Component {
     this.setState({date: this.dateInput.value, haveDate: true})
     //this.getTickers()
     priceModel.getPriceEntryList(this.dateInput.value)
-      .then((res) =>{
-        console.log("in date entry", res)
+      .then((res) => {
         this.setState({allTickers: res.tickers, prices: res.prices})
         this.state.prices.forEach(p => {
           const priceWithTicker = _.find(this.state.allTickers, i => i.id === p.tickerId)
-          if (priceWithTicker)
+
+          // If a price has already been entered for this ticker on this date, populate the input field with it.
+          // The price input fields are dynamically generated and the ticker symbol is used as it's id. So to
+          // populate it with the existing price, find the field by id and update it's val.
+          if (priceWithTicker) {
             console.log("symbol", priceWithTicker.symbol)
             $("#" + priceWithTicker.symbol).val(p.price)
+
+            // Also set the pricemap for existing prices
+            this.setState({priceMap: this.state.priceMap.set(priceWithTicker.symbol, p.price)})
+          }
         })
       })
   }
 
-  getTickers() {
-    tickerModel.getTickerList()
-      .then((response) => {
-        this.setState({allTickers: response.data})
-      })
-  }
+  //getTickers() {
+  //  tickerModel.getTickerList()
+  //    .then((response) => {
+  //      this.setState({allTickers: response.data})
+  //    })
+  //}
 
   handleTextChange(e) {
-    this.setState({priceMap: this.state.priceMap.set(e.target.id, e.target.value)})
+    this.setState({priceMap: this.state.priceMap.set(e.target.id, Number(e.target.value))})
   }
 
   handleSubmit() {
+    console.log("in handle submit - pricemap", this.state.priceMap)
     this.state.priceMap.forEach((value, key) => {
       const tickerId = _.find(this.state.allTickers, t => t.symbol == key).id
       const price = {
         "date": this.state.date,
         "tickerId": tickerId,
-        "id": _.find(this.state.prices, p => p.tickerId == tickerId).id,
+        "id": this.getPriceIdForTicker(tickerId), // sucks that es6 doesn't have the existential operator (?)
         "price": value
       }
 
@@ -72,12 +80,12 @@ class PriceEntry extends React.Component {
     })
   }
 
-  getPriceForTicker(tickerId) {
+  getPriceIdForTicker(tickerId) {
     const price = _.find(this.state.prices, p => p.tickerId == tickerId)
     if (price)
-      return price.price
+      return price.id
     else
-      return 0
+      return null
   }
 
   render() {
@@ -105,18 +113,18 @@ class PriceEntry extends React.Component {
             <div className="col-sm-7"></div>
           </div>
 
-        {this.state.allTickers.map((repo, index) => {
-          return (
-              <div key={index} className="form-group">
-                <label className="control-label col-sm-2">{repo.symbol}</label>
-                <div className="col-sm-2">
-                  <input type="text" className="form-control" id={repo.symbol} placeholder="price"
+          {this.state.allTickers.map((repo, index) => {
+            return (
+                <div key={index} className="form-group">
+                  <label className="control-label col-sm-2">{repo.symbol}</label>
+                  <div className="col-sm-2">
+                    <input type="text" className="form-control" id={repo.symbol} placeholder="price"
 
-                    onChange={(i) => this.handleTextChange(i)}/>
+                      onChange={(i) => this.handleTextChange(i)}/>
+                  </div>
+                  <div className="col-sm-8"></div>
                 </div>
-                <div className="col-sm-8"></div>
-              </div>
-          )
+            )
           })}
 
           <div className="form-group">
