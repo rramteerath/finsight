@@ -7,7 +7,7 @@ import * as numbers from '../utils/numbers'
 const baseUrl = 'http://localhost:9001/'
 
 export function getPortfolioList() {
-	return axios.get(baseUrl + 'portfolios')
+	return axios.get(baseUrl + 'portfolios') 
 }
 
 // Returns transactions for the specified id. Also returns tickers and transaction
@@ -41,6 +41,7 @@ function fillModel(transactions, tickers, transTypes, prices) {
 	}))
 }
 
+// getPortfolioTransactionsBase
 export function getPortfolioTransactionsBase(portfolioId) {
 	return axios.get(baseUrl + 'trans?portfolioId=' + portfolioId)
 }
