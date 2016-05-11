@@ -104,7 +104,6 @@ class TransEdit extends React.Component {
 			"portfolioId": this.props.currentPortfolio.id
 		}
 
-		console.log("trans", trans)
 		transactionModel.saveTransaction(trans)
 			.then((res) => {
 				this.props.transactionsChanged()
@@ -115,8 +114,6 @@ class TransEdit extends React.Component {
 	}
 
 	handleClear() {
-		console.log("in clear")
-
 		this.edittransform.reset()
 		this.setState(
 			{
@@ -125,11 +122,9 @@ class TransEdit extends React.Component {
 				buttonLabel: "Add",
 				mode: "clearing"
 			})
-
 	}
 
 	selectTransType(transType) {
-		console.log("transType", transType)
 		this.setState({selectedTransType: transType})
 	}
 

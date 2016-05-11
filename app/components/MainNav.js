@@ -1,5 +1,5 @@
 import React from 'react'
-
+import './main.sass'
 const MainNav = ({history, children}) => {
 
 
@@ -8,7 +8,7 @@ const MainNav = ({history, children}) => {
       <nav className="navbar navbar-inverse">
         <div className="container-fluid">
           <div className="navbar-header">
-            <a className="navbar-brand" href="/">FinSight</a>
+            <a className="navbar-brand app-title" href="/">FinSight</a>
           </div>
           <ul className="nav navbar-nav">
             <li><a href="/#main">Portfolios</a></li>

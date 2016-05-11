@@ -68,8 +68,9 @@ class PortGrid extends React.Component {
 			{"columnName": "transType", "displayName": "Type", "cssClassName": "col-sm-1"},
 			{"columnName": "ticker", "displayName": "Ticker", "cssClassName": "col-sm-1"},
 			{"columnName": "quantity", "displayName": "Quantity", "cssClassName": "col-sm-1 align-right"},
-			{"columnName": "price", "displayName": "Price", "cssClassName": "col-sm-2 align-right"},
-			{"columnName": "commission", "displayName": "Commission", "cssClassName": "col-sm-1 align-right"},
+			{"columnName": "price", "displayName": "Price Paid", "cssClassName": "col-sm-1 align-right"},
+			{"columnName": "currPrice", "displayName": "Current Price", "cssClassName": "col-sm-1 align-right"},
+			{"columnName": "commission", "displayName": "Comm", "cssClassName": "col-sm-1 align-right"},
 			{"columnName": "costBasis", "displayName": "Cost Basis", "cssClassName": "col-sm-2 align-right"},
 			{"columnName": "marketValue", "displayName": "Market Val", "cssClassName": "col-sm-1 align-right"},
 			{"columnName": "editField", "displayName": "", "cssClassName": "col-sm-1",
@@ -90,7 +91,7 @@ class PortGrid extends React.Component {
 				<div>
 					<Griddle results={this.state.transactions} columnMetadata={colMeta}
 					showFilter={false} resultsPerPage="15" showSettings={true}
-          columns={["formattedExecDate", "transType", "ticker", "quantity", "price", "commission", "costBasis", "marketValue", "editField"]}/>
+          columns={["formattedExecDate", "transType", "ticker", "quantity", "currPrice", "price", "commission", "costBasis", "marketValue", "editField"]}/>
 				</div>
 
 				<div>

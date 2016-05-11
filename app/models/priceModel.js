@@ -24,7 +24,7 @@ export function savePrice(price) {
     return
 
   if (price.id)
-    return axios.put(baseUrl + 'price/' + price)
+    return axios.put(baseUrl + 'price/' + price.id, price)
   else
     return axios.post(baseUrl + 'price', price)
 }

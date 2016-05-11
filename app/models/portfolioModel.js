@@ -28,17 +28,37 @@ function fillModel(transactions, tickers, transTypes, prices) {
   // The market value calculation filters the prices list by a specific ticker
   // then gets the price from the latest date of this subset.
 	return _.map(transactions, trans => _.defaults(trans, {
-		"ticker": _.find(tickers, k => k.id == trans.tickerId).symbol,
-		"transType": _.find(transTypes, m => m.id == trans.transactionTypeId).name,
-		"formattedExecDate": new Date(trans.executionDate).toLocaleDateString('en-US'),
-		"costBasis": (trans.transactionTypeId == 1 || trans.transactionTypeId == 3)
-      ? numbers.formatCurrency((trans.price * trans.quantity) - trans.commission) : 0.00,
-    "marketValue": (trans.transactionTypeId == 1 || trans.transactionTypeId == 3)
-      ? numbers.formatCurrency(
-        _.max(_.filter(prices,
-        p => trans.tickerId == p.tickerId), 'date').price * trans.quantity) : 0.00,
-		"editField": ""
-	}))
+			"ticker": _.find(tickers, k => k.id == trans.tickerId).symbol,
+			"transType": _.find(transTypes, m => m.id == trans.transactionTypeId).name,
+			"formattedExecDate": new Date(trans.executionDate).toLocaleDateString('en-US'),
+			"costBasis": (trans.transactionTypeId == 1 || trans.transactionTypeId == 3)
+				? numbers.formatCurrency((trans.price * trans.quantity) - trans.commission) : 0.00,
+			"marketValue": (trans.transactionTypeId == 1 || trans.transactionTypeId == 3)
+				? numbers.formatCurrency(getLatestPriceByTickerId(prices, trans.tickerId) * trans.quantity) : 0.00,
+			"editField": "",
+			"currPrice": getLatestPriceByTickerId(prices, trans.tickerId)
+		})
+	)
+}
+ 
+// Get the latest price for the specified tickerId.
+// 1. Get all prices for current ticker.
+// 2. Get item with the max date from the the above result.
+// 3. Get the corresponding price from the above result.
+function getLatestPriceByTickerId(prices, tickerId) {
+	// const filtered = _.filter(prices, p => tickerId === p.tickerId)
+	// console.log("filtered", filtered)
+	// const mapped = filtered.map(i => i.date)
+	// console.log("mapped", mapped)
+	// const maxxed = _.max(mapped)
+	// console.log("maxxed", maxxed)
+	// const priced = prices.filter(d => d.date === maxxed && d.tickerId === tickerId)
+	// console.log("priced", priced[0].price)
+	
+	return prices.filter(d => 
+		d.date === (_.max(prices.filter(p => tickerId === p.tickerId).map(i => i.date))) 
+		&& d.tickerId === tickerId)[0].price
+
 }
 
 // getPortfolioTransactionsBase

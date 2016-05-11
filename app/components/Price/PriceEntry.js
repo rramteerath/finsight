@@ -8,13 +8,8 @@ class PriceEntry extends React.Component {
   constructor(props) {
     super(props)
 
-    this.state = {
-      // TODO: Cache tickers on client
-      allTickers: [],
-      priceMap: new Map(),
-      date: Date.now(),
-      prices: []
-    }
+    // Initialize state
+    this.resetState()    
   }
 
   componentDidMount() {
@@ -22,13 +17,33 @@ class PriceEntry extends React.Component {
   }
 
   init(props) {
+    // Set date field as a date picker
     $( "#date" ).datepicker()
     this.dateInput.value = new Date(this.state.date).toLocaleDateString('en-US')
+  }
+  
+  resetState() {
+    if (!this.state)
+      this.state = {
+        // TODO: Cache tickers on client
+        allTickers: [],
+        priceMap: new Map(),
+        date: Date.now(),
+        prices: [],
+        haveDate: false
+      }
+    else
+      this.setState({
+        allTickers: [],
+        priceMap: new Map(),
+        date: Date.now(),
+        prices: [],
+        haveDate: false
+      })
   }
 
   handleDateEntry() {
     this.setState({date: this.dateInput.value, haveDate: true})
-    //this.getTickers()
     priceModel.getPriceEntryList(this.dateInput.value)
       .then((res) => {
         this.setState({allTickers: res.tickers, prices: res.prices})
@@ -39,7 +54,6 @@ class PriceEntry extends React.Component {
           // The price input fields are dynamically generated and the ticker symbol is used as it's id. So to
           // populate it with the existing price, find the field by id and update it's val.
           if (priceWithTicker) {
-            console.log("symbol", priceWithTicker.symbol)
             $("#" + priceWithTicker.symbol).val(p.price)
 
             // Also set the pricemap for existing prices
@@ -49,19 +63,11 @@ class PriceEntry extends React.Component {
       })
   }
 
-  //getTickers() {
-  //  tickerModel.getTickerList()
-  //    .then((response) => {
-  //      this.setState({allTickers: response.data})
-  //    })
-  //}
-
   handleTextChange(e) {
     this.setState({priceMap: this.state.priceMap.set(e.target.id, Number(e.target.value))})
   }
 
   handleSubmit() {
-    console.log("in handle submit - pricemap", this.state.priceMap)
     this.state.priceMap.forEach((value, key) => {
       const tickerId = _.find(this.state.allTickers, t => t.symbol == key).id
       const price = {
@@ -71,14 +77,18 @@ class PriceEntry extends React.Component {
         "price": value
       }
 
-      console.log("price", price)
-
-      //priceModel.savePrice(price)
-      //  .then((res) => {
-      //    // TODO: clear form, state params, etc.
-      //  })
+      priceModel.savePrice(price)
+       .then((res) => {
+         // Clear form, state params, etc.
+         this.handleClear()
+       })
     })
   }
+  
+  handleClear() {
+		//this.priceEntryForm.reset()
+		this.resetState()
+	}
 
   getPriceIdForTicker(tickerId) {
     const price = _.find(this.state.prices, p => p.tickerId == tickerId)
@@ -128,14 +138,20 @@ class PriceEntry extends React.Component {
           })}
 
           <div className="form-group">
-            <div className="col-sm-2"></div>
+            <div className="col-sm-2">
+            </div>
             <div className="col-sm-2 align-right">
               {
                 this.state.haveDate ?
+                <div>
                   <button type="button" className="btn btn-success" onClick={() => this.handleSubmit()}>
                     Submit
+                  </button>&nbsp;
+                  <button type="button" className="btn btn-success" onClick={() => this.handleClear()}>
+                    Cancel
                   </button>
-                  : null
+                </div>
+                : null
               }
               </div>
             <div className="col-sm-8"></div>
