@@ -2,9 +2,10 @@
 import React from 'react'
 import PortfolioList from './Portfolio/PortfolioList'
 import PortGrid from './Portfolio/PortGrid'
+import Hello from './testts'
 import './main.sass'
 import '../styles/globalStyles.sass'
- 
+
 // props passed into Main
 // Use object destructuring to change props -> {history, children}
 // So const Main = (props) => {...}
@@ -33,7 +34,9 @@ class Main extends React.Component {
 
 				<div>
 					<PortGrid currentPortfolio={this.state.currentPortfolio}/>
+          <Hello />
 				</div>
+
 			</div>
 		)
 	}

@@ -13,7 +13,8 @@ class PortGrid extends React.Component {
 
 		this.state = {
 			transactions: [],
-			selectedTransaction: {}
+			selectedTransaction: {},
+			selectedPeriod: "all"
 		}
 	}
 
@@ -61,6 +62,18 @@ class PortGrid extends React.Component {
 			})
 	}
 
+	handlePeriodChage(period) {
+		// reset all buttons
+		$("#ytd").removeClass("active");
+		$("#all").removeClass("active");
+		$("#qtd").removeClass("active");
+		$("#mtd").removeClass("active");
+
+		// set the requested one
+		$("#" + period).addClass("active");
+
+	}
+
 
 	render() {
 		const colMeta = [
@@ -83,10 +96,10 @@ class PortGrid extends React.Component {
 		return (
 			<div>
         <div className="btn-group">
-          <button type="button" className="btn btn-primary">All Time</button>
-          <button type="button" className="btn btn-primary">YTD</button>
-          <button type="button" className="btn btn-primary">QTD</button>
-          <button type="button" className="btn btn-primary">MTD</button>
+          <button type="button" id="all" className="btn btn-primary" onClick={() => this.handlePeriodChage('all')}>All Time</button>
+          <button type="button" id="ytd" className="btn btn-primary" onClick={() => this.handlePeriodChage('ytd')}>YTD</button>
+          <button type="button" id="qtd" className="btn btn-primary" onClick={() => this.handlePeriodChage('qtd')}>QTD</button>
+          <button type="button" id="mtd" className="btn btn-primary" onClick={() => this.handlePeriodChage('mtd')}>MTD</button>
         </div>
 				<div>
 					<Griddle results={this.state.transactions} columnMetadata={colMeta}
