@@ -3,25 +3,26 @@ import * as tickerModel from './tickerModel'
 import * as transTypeModel from './transTypeModel'
 import * as priceModel from './priceModel'
 import * as numbers from '../utils/numbers'
+import { DateRange } from '../utils/DateRange'
 
 const baseUrl = 'http://localhost:9001/'
 
 export function getPortfolioList() {
-	return axios.get(baseUrl + 'portfolios') 
+	return axios.get(baseUrl + 'portfolios')
 }
 
 // Returns transactions for the specified id. Also returns tickers and transaction
 // types in order to map ticker and trans id to their names for display.
-export function getPortfolioTransactions(portfolioId) {
-	return axios.all([getPortfolioTransactionsBase(portfolioId), 
-		tickerModel.getTickerList(), 
+export function getPortfolioTransactions(portfolioId, dateRange) {
+	return axios.all([getPortfolioTransactionsBase(portfolioId),
+		tickerModel.getTickerList(),
 		transTypeModel.getTransTypeList(),
 		priceModel.getPriceList()])
 			.then(axios.spread((transactions, tickers, transTypes, prices) =>
-				fillModel(transactions.data, tickers.data, transTypes.data, prices.data)))
+				fillModel(transactions.data, tickers.data, transTypes.data, prices.data, dateRange)))
 }
 
-function fillModel(transactions, tickers, transTypes, prices) {
+function fillModel(transactions, tickers, transTypes, prices, dateRange) {
 	// Get ticker and trans type names from associated ids for display.
 	// Use _.defaults to combine these with the original transactions array
 
@@ -38,9 +39,10 @@ function fillModel(transactions, tickers, transTypes, prices) {
 			"editField": "",
 			"currPrice": getLatestPriceByTickerId(prices, trans.tickerId)
 		})
-	)
+	).filter(t => (t.executionDate >= dateRange.startDate.toISOString())
+			&& (t.executionDate <= dateRange.endDate.toISOString()))
 }
- 
+
 // Get the latest price for the specified tickerId.
 // 1. Get all prices for current ticker.
 // 2. Get item with the max date from the the above result.
@@ -54,11 +56,10 @@ function getLatestPriceByTickerId(prices, tickerId) {
 	// console.log("maxxed", maxxed)
 	// const priced = prices.filter(d => d.date === maxxed && d.tickerId === tickerId)
 	// console.log("priced", priced[0].price)
-	
-	return prices.filter(d => 
-		d.date === (_.max(prices.filter(p => tickerId === p.tickerId).map(i => i.date))) 
-		&& d.tickerId === tickerId)[0].price
 
+	return prices.filter(d =>
+		d.date === (_.max(prices.filter(p => tickerId === p.tickerId).map(i => i.date)))
+		&& d.tickerId === tickerId)[0].price
 }
 
 // getPortfolioTransactionsBase

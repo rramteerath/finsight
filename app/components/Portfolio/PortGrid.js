@@ -4,6 +4,7 @@ import * as portModel from '../../models/portfolioModel'
 import * as transModel from '../../models/transactionModel'
 import TransEdit from '../Transaction/TransEdit'
 import GridEditButtons from './GridEditButtons'
+import { DateRange } from '../../utils/DateRange'
 import '../../styles/globalStyles.sass'
 
 class PortGrid extends React.Component {
@@ -39,7 +40,7 @@ class PortGrid extends React.Component {
 	}
 
 	getTransactions(portfolio) {
-		portModel.getPortfolioTransactions(portfolio.id)
+		portModel.getPortfolioTransactions(portfolio.id, DateRange.getDateRangeByPeriod("all"))
 			.then((response) => {
 				this.setState({transactions: response})
 			})
@@ -72,6 +73,7 @@ class PortGrid extends React.Component {
 		// set the requested one
 		$("#" + period).addClass("active");
 
+		const dr = DateRange.getDateRangeByPeriod(period)
 	}
 
 
@@ -87,7 +89,7 @@ class PortGrid extends React.Component {
 			{"columnName": "costBasis", "displayName": "Cost Basis", "cssClassName": "col-sm-2 align-right"},
 			{"columnName": "marketValue", "displayName": "Market Val", "cssClassName": "col-sm-1 align-right"},
 			{"columnName": "editField", "displayName": "", "cssClassName": "col-sm-1",
-				"customComponent": GridEditButtons, 
+				"customComponent": GridEditButtons,
 				"onDeleteClick": this.handleDeleteTransaction.bind(this),
 				"onEditClick": this.handleEditTransaction.bind(this)
 			}
@@ -108,7 +110,7 @@ class PortGrid extends React.Component {
 				</div>
 
 				<div>
-					<TransEdit 
+					<TransEdit
 						currentPortfolio={this.props.currentPortfolio}
 						selectedTransaction={this.state.selectedTransaction}
 						transactionsChanged={() => this.handleTransactionsChanged()} />

@@ -34,7 +34,9 @@ class Main extends React.Component {
 
 				<div>
 					<PortGrid currentPortfolio={this.state.currentPortfolio}/>
-          <Hello />
+
+          { /* This is how you add a comment to jsx/tsx... jeez */ }
+          { /* <Hello /> */ }
 				</div>
 
 			</div>

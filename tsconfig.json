@@ -20,6 +20,8 @@
         "!node_modules/**"
     ],
     "files": [
+        "app/utils/DateRange.ts",
+        "app/utils/IDateRange.d.ts",
         "typings/globals/react-dom/index.d.ts",
         "typings/globals/react/index.d.ts",
         "typings/index.d.ts",
