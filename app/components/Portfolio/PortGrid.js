@@ -8,6 +8,8 @@ import { DateRange } from '../../utils/DateRange'
 import { DATE_PERIOD_ALL, DATE_PERIOD_YTD, DATE_PERIOD_QTD, DATE_PERIOD_MTD } from '../../utils/datePeriods'
 import { CurrencyFormatter } from '../Common/CurrencyFormatter'
 import { PLFormatter } from '../Common/PLFormatter'
+import { NumberUtils } from '../../utils/NumberUtils';
+
 import '../../styles/globalStyles.sass'
 
 class PortGrid extends React.Component {
@@ -47,8 +49,12 @@ class PortGrid extends React.Component {
 	getTransactions(portfolio) {
 		portModel.getPortfolioTransactions(portfolio.id, DateRange.getDateRangeByPeriod(this.state.selectedPeriod))
 			.then((response) => {
-
-				this.setState({transactions: response}, () => {
+				const summary = {
+					"costBasis": response.map(trans => trans.costBasis).reduce((a, b) => a + b),
+					"mktVal": response.map(trans => trans.marketValue).reduce((a, b) => a + b),
+					"pl": response.map(trans => trans.pl).reduce((a, b) => a + b)
+				}
+				this.setState({transactions: response, summary: summary}, () => {
 					this.toggleActivePeriod(this.state.selectedPeriod)
 				})
 			})
@@ -129,14 +135,13 @@ class PortGrid extends React.Component {
           columns={["formattedExecDate", "transType", "ticker", "quantity", "currPrice", "startPrice", "commission", "costBasis", "marketValue", "pl", "editField"]}/>
 				</div>
 
-				{ /* TODO - Add summary row
 				<div className="row">
 					<div className="col-sm-8 summary">Totals</div>
-					<div className="col-sm-1 summary align-right">123</div>
-					<div className="col-sm-1 summary align-right">456</div>
-					<div className="col-sm-1 summary align-right">789</div>
+					<div className="col-sm-1 summary align-right"><CurrencyFormatter data={(this.state.summary.costBasis)} /></div>
+					<div className="col-sm-1 summary align-right"><CurrencyFormatter data={(this.state.summary.mktVal)} /></div>
+					<div className="col-sm-1 summary align-right"><PLFormatter data={(this.state.summary.pl)} /></div>
 					<div className="col-sm-1 summary"></div>
-				</div> */}
+				</div>
 
 				<div>
 					<TransEdit
