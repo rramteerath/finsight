@@ -13,16 +13,16 @@ export function getPortfolioList() {
 
 // Returns transactions for the specified id. Also returns tickers and transaction
 // types in order to map ticker and trans id to their names for display.
-export function getPortfolioTransactions(portfolioId, dateRange) {
+export function getPortfolioTransactions(portfolioId, dateRange, reinvAsGain) {
 	return axios.all([getPortfolioTransactionsBase(portfolioId),
 		tickerModel.getTickerList(),
 		transTypeModel.getTransTypeList(),
 		priceModel.getPriceList()])
 			.then(axios.spread((transactions, tickers, transTypes, prices) =>
-				fillModel(transactions.data, tickers.data, transTypes.data, prices.data, dateRange)))
+				fillModel(transactions.data, tickers.data, transTypes.data, prices.data, dateRange, reinvAsGain)))
 }
 
-function fillModel(transactions, tickers, transTypes, prices, dateRange) {
+function fillModel(transactions, tickers, transTypes, prices, dateRange, reinvAsGain) {
 
 	// Get subset of prices that fall within the date range
 	const priceSubset = prices.filter(p => (p.date >= dateRange.startDate.toISOString())
@@ -34,7 +34,7 @@ function fillModel(transactions, tickers, transTypes, prices, dateRange) {
   // The market value calculation filters the prices list by a specific ticker
   // then gets the price from the latest date of this subset.
 	return transactions.map(trans => {
-		const costBasis = calcCostBasis(priceSubset, trans, dateRange)
+		const costBasis = calcCostBasis(priceSubset, trans, dateRange, reinvAsGain)
 		const mktVal = calcMarketVal(priceSubset, trans)
 
 		// startPrice will either be the price paid or the starting price in the date range
@@ -56,10 +56,19 @@ function fillModel(transactions, tickers, transTypes, prices, dateRange) {
 }
 
 // Calculate cost basis for buys and reinvest
-function calcCostBasis(prices, trans, dateRange) {
-	return (trans.transactionTypeId === 1 || trans.transactionTypeId === 3)
-		? getResolvedStartPrice(prices, trans, dateRange).price * trans.quantity - trans.commission
-		: 0
+// If we're considering all dividends as purely gain (reinvAsGain == true)
+// then our cost basis for reinv will be 0.
+// TODO: Take tax implications into consideration so instead of a cost basis
+// of 0 it would be (for example) 15% of the actual cost basis adjusting for
+// 15% tax on dividends. These are considered realized gains since you are
+// responsible for paying the taxes in the year it is distributed.
+function calcCostBasis(prices, trans, dateRange, reinvAsGain) {
+	if (reinvAsGain && trans.transactionTypeId === 3)
+		return 0
+	else
+		return (trans.transactionTypeId === 1 || trans.transactionTypeId === 3)
+			? getResolvedStartPrice(prices, trans, dateRange).price * trans.quantity - trans.commission
+			: 0
 }
 
 // Calculate market value for buys and reinvest

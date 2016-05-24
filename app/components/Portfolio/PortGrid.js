@@ -21,7 +21,8 @@ class PortGrid extends React.Component {
 			transactions: [],
 			selectedTransaction: {},
 			selectedPeriod: DATE_PERIOD_ALL,
-			summary: {}
+			summary: {},
+			reinvAsGain: true
 		}
 	}
 
@@ -47,7 +48,7 @@ class PortGrid extends React.Component {
 	}
 
 	getTransactions(portfolio) {
-		portModel.getPortfolioTransactions(portfolio.id, DateRange.getDateRangeByPeriod(this.state.selectedPeriod))
+		portModel.getPortfolioTransactions(portfolio.id, DateRange.getDateRangeByPeriod(this.state.selectedPeriod), this.state.reinvAsGain)
 			.then((response) => {
 				const summary = {
 					"costBasis": response.map(trans => trans.costBasis).reduce((a, b) => a + b),
@@ -56,6 +57,9 @@ class PortGrid extends React.Component {
 				}
 				this.setState({transactions: response, summary: summary}, () => {
 					this.toggleActivePeriod(this.state.selectedPeriod)
+
+					// TODO: put these in constants
+					this.toggleReinvOption(this.state.reinvAsGain ? 'reinvg' : 'reinvb')
 				})
 			})
 	}
@@ -77,7 +81,7 @@ class PortGrid extends React.Component {
 			})
 	}
 
-	handlePeriodChage(period) {
+	handlePeriodChange(period) {
 		// Note that setState does not immediately mutate this.state.
 		// See https://facebook.github.io/react/docs/component-api.html
 		// If you need to do something that depends on the state you just set
@@ -87,6 +91,21 @@ class PortGrid extends React.Component {
 			this.getTransactions(this.props.currentPortfolio)
 			this.toggleActivePeriod(period)
 		})
+	}
+
+	handleReinvCalcChange(val) {
+		console.log("val", val)
+		this.setState({reinvAsGain: val === 'reinvg'}, () => {
+			this.getTransactions(this.props.currentPortfolio)
+			this.toggleReinvOption(val)
+		})
+	}
+
+	toggleReinvOption(val) {
+		$("#reinvg").removeClass("active");
+		$("#reinvb").removeClass("active");
+
+		$("#" + val).addClass("active");
 	}
 
 	toggleActivePeriod(period) {
@@ -124,11 +143,15 @@ class PortGrid extends React.Component {
 		return (
 			<div>
         <div className="btn-group">
-          <button type="button" id="all" className="btn btn-primary" onClick={() => this.handlePeriodChage('all')}>All Time</button>
-          <button type="button" id="ytd" className="btn btn-primary" onClick={() => this.handlePeriodChage('ytd')}>YTD</button>
-          <button type="button" id="qtd" className="btn btn-primary" onClick={() => this.handlePeriodChage('qtd')}>QTD</button>
-          <button type="button" id="mtd" className="btn btn-primary" onClick={() => this.handlePeriodChage('mtd')}>MTD</button>
+          <button type="button" id={DATE_PERIOD_ALL} className="btn btn-primary" onClick={() => this.handlePeriodChange(DATE_PERIOD_ALL)}>All Time</button>
+          <button type="button" id={DATE_PERIOD_YTD} className="btn btn-primary" onClick={() => this.handlePeriodChange(DATE_PERIOD_YTD)}>YTD</button>
+          <button type="button" id={DATE_PERIOD_QTD} className="btn btn-primary" onClick={() => this.handlePeriodChange(DATE_PERIOD_QTD)}>QTD</button>
+          <button type="button" id={DATE_PERIOD_MTD} className="btn btn-primary" onClick={() => this.handlePeriodChange(DATE_PERIOD_MTD)}>MTD</button>
         </div>
+				<div className="btn-group btn-bar-div">
+					<button type="button" id="reinvg" className="btn btn-primary" onClick={() => this.handleReinvCalcChange('reinvg')} title="P&L calc: Reinv as gain">Reinv $</button>
+					<button type="button" id="reinvb" className="btn btn-primary" onClick={() => this.handleReinvCalcChange('reinvb')} title="P&L calc: Reinv as buy">Reinv B</button>
+				</div>
 				<div>
 					<Griddle results={this.state.transactions} columnMetadata={colMeta}
 					showFilter={false} resultsPerPage="15" showSettings={true}
