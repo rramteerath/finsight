@@ -3,3 +3,6 @@ app/components/testts.js
 app/utils/DateRange.js
 app/utils/datePeriods.js
 typings/
+app/components/Common/CurrencyFormatter.js
+app/components/Common/PLFormatter.js
+app/utils/NumberUtils.js

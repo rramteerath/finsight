@@ -20,12 +20,16 @@
         "!node_modules/**"
     ],
     "files": [
+        "app/components/Common/ICurrencyFormatterProps.d.ts",
         "app/utils/datePeriods.ts",
         "app/utils/DateRange.ts",
         "app/utils/IDateRange.d.ts",
+        "app/utils/NumberUtils.ts",
         "typings/globals/react-dom/index.d.ts",
         "typings/globals/react/index.d.ts",
         "typings/index.d.ts",
+        "app/components/Common/CurrencyFormatter.tsx",
+        "app/components/Common/PLFormatter.tsx",
         "app/components/testts.tsx"
     ],
     "exclude": [],

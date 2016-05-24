@@ -6,7 +6,8 @@ import TransEdit from '../Transaction/TransEdit'
 import GridEditButtons from './GridEditButtons'
 import { DateRange } from '../../utils/DateRange'
 import { DATE_PERIOD_ALL, DATE_PERIOD_YTD, DATE_PERIOD_QTD, DATE_PERIOD_MTD } from '../../utils/datePeriods'
-
+import { CurrencyFormatter } from '../Common/CurrencyFormatter'
+import { PLFormatter } from '../Common/PLFormatter'
 import '../../styles/globalStyles.sass'
 
 class PortGrid extends React.Component {
@@ -17,7 +18,8 @@ class PortGrid extends React.Component {
 		this.state = {
 			transactions: [],
 			selectedTransaction: {},
-			selectedPeriod: DATE_PERIOD_ALL
+			selectedPeriod: DATE_PERIOD_ALL,
+			summary: {}
 		}
 	}
 
@@ -45,6 +47,7 @@ class PortGrid extends React.Component {
 	getTransactions(portfolio) {
 		portModel.getPortfolioTransactions(portfolio.id, DateRange.getDateRangeByPeriod(this.state.selectedPeriod))
 			.then((response) => {
+
 				this.setState({transactions: response}, () => {
 					this.toggleActivePeriod(this.state.selectedPeriod)
 				})
@@ -102,9 +105,9 @@ class PortGrid extends React.Component {
 			{"columnName": "startPrice", "displayName": "Start Price", "cssClassName": "col-sm-1 align-right"},
 			{"columnName": "currPrice", "displayName": "Current Price", "cssClassName": "col-sm-1 align-right"},
 			{"columnName": "commission", "displayName": "Comm", "cssClassName": "col-sm-1 align-right"},
-			{"columnName": "costBasis", "displayName": "Cost Basis", "cssClassName": "col-sm-1 align-right"},
-			{"columnName": "marketValue", "displayName": "Market Val", "cssClassName": "col-sm-1 align-right"},
-			{"columnName": "pl", "displayName": "P&L", "cssClassName": "col-sm-1 align-right"},
+			{"columnName": "costBasis", "displayName": "Cost Basis", "cssClassName": "col-sm-1 align-right", "customComponent": CurrencyFormatter},
+			{"columnName": "marketValue", "displayName": "Market Val", "cssClassName": "col-sm-1 align-right", "customComponent": CurrencyFormatter},
+			{"columnName": "pl", "displayName": "P&L", "cssClassName": "col-sm-1 align-right", "customComponent": PLFormatter},
 			{"columnName": "editField", "displayName": "", "cssClassName": "col-sm-1",
 				"customComponent": GridEditButtons,
 				"onDeleteClick": this.handleDeleteTransaction.bind(this),
@@ -125,6 +128,15 @@ class PortGrid extends React.Component {
 					showFilter={false} resultsPerPage="15" showSettings={true}
           columns={["formattedExecDate", "transType", "ticker", "quantity", "currPrice", "startPrice", "commission", "costBasis", "marketValue", "pl", "editField"]}/>
 				</div>
+
+				{ /* TODO - Add summary row
+				<div className="row">
+					<div className="col-sm-8 summary">Totals</div>
+					<div className="col-sm-1 summary align-right">123</div>
+					<div className="col-sm-1 summary align-right">456</div>
+					<div className="col-sm-1 summary align-right">789</div>
+					<div className="col-sm-1 summary"></div>
+				</div> */}
 
 				<div>
 					<TransEdit

@@ -45,9 +45,10 @@ function fillModel(transactions, tickers, transTypes, prices, dateRange) {
 			"transType": _.find(transTypes, m => m.id == trans.transactionTypeId).name,
 			"formattedExecDate": new Date(startPrice.date).toLocaleDateString('en-US'),
 			"startPrice": startPrice.price,
-			"costBasis": numbers.formatCurrency(costBasis),
-			"marketValue": numbers.formatCurrency(mktVal),
-			"pl": numbers.formatCurrency(mktVal - costBasis),
+			"costBasis": costBasis,
+			"marketValue": mktVal,
+			"pl": mktVal - costBasis,
+			// "pl": numbers.formatCurrency(mktVal - costBasis),
 			"editField": "",
 			"currPrice": getLatestPriceByTickerId(priceSubset, trans.tickerId).price
 		})

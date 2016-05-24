@@ -1,0 +1,3 @@
+interface ICurrencyFormatterProps {
+  data: number
+}
