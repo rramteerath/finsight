@@ -5,6 +5,8 @@ import * as transModel from '../../models/transactionModel'
 import TransEdit from '../Transaction/TransEdit'
 import GridEditButtons from './GridEditButtons'
 import { DateRange } from '../../utils/DateRange'
+import { DATE_PERIOD_ALL, DATE_PERIOD_YTD, DATE_PERIOD_QTD, DATE_PERIOD_MTD } from '../../utils/datePeriods'
+
 import '../../styles/globalStyles.sass'
 
 class PortGrid extends React.Component {
@@ -15,7 +17,7 @@ class PortGrid extends React.Component {
 		this.state = {
 			transactions: [],
 			selectedTransaction: {},
-			selectedPeriod: "all"
+			selectedPeriod: DATE_PERIOD_ALL
 		}
 	}
 
@@ -35,14 +37,17 @@ class PortGrid extends React.Component {
 	}
 
 	init(props) {
-		if (this.props.currentPortfolio.id)
+		if (this.props.currentPortfolio.id) {
 			this.getTransactions(this.props.currentPortfolio)
+		}
 	}
 
 	getTransactions(portfolio) {
-		portModel.getPortfolioTransactions(portfolio.id, DateRange.getDateRangeByPeriod("all"))
+		portModel.getPortfolioTransactions(portfolio.id, DateRange.getDateRangeByPeriod(this.state.selectedPeriod))
 			.then((response) => {
-				this.setState({transactions: response})
+				this.setState({transactions: response}, () => {
+					this.toggleActivePeriod(this.state.selectedPeriod)
+				})
 			})
 	}
 
@@ -64,16 +69,26 @@ class PortGrid extends React.Component {
 	}
 
 	handlePeriodChage(period) {
+		// Note that setState does not immediately mutate this.state.
+		// See https://facebook.github.io/react/docs/component-api.html
+		// If you need to do something that depends on the state you just set
+		// then pass it into a callback when doing setState...
+		this.setState({ selectedPeriod: period }, () => {
+
+			this.getTransactions(this.props.currentPortfolio)
+			this.toggleActivePeriod(period)
+		})
+	}
+
+	toggleActivePeriod(period) {
 		// reset all buttons
-		$("#ytd").removeClass("active");
-		$("#all").removeClass("active");
-		$("#qtd").removeClass("active");
-		$("#mtd").removeClass("active");
+		$("#" + DATE_PERIOD_ALL).removeClass("active");
+		$("#" + DATE_PERIOD_YTD).removeClass("active");
+		$("#" + DATE_PERIOD_QTD).removeClass("active");
+		$("#" + DATE_PERIOD_MTD).removeClass("active");
 
 		// set the requested one
 		$("#" + period).addClass("active");
-
-		const dr = DateRange.getDateRangeByPeriod(period)
 	}
 
 
@@ -83,11 +98,13 @@ class PortGrid extends React.Component {
 			{"columnName": "transType", "displayName": "Type", "cssClassName": "col-sm-1"},
 			{"columnName": "ticker", "displayName": "Ticker", "cssClassName": "col-sm-1"},
 			{"columnName": "quantity", "displayName": "Quantity", "cssClassName": "col-sm-1 align-right"},
-			{"columnName": "price", "displayName": "Price Paid", "cssClassName": "col-sm-1 align-right"},
+			// {"columnName": "price", "displayName": "Price Paid", "cssClassName": "col-sm-1 align-right"},
+			{"columnName": "startPrice", "displayName": "Start Price", "cssClassName": "col-sm-1 align-right"},
 			{"columnName": "currPrice", "displayName": "Current Price", "cssClassName": "col-sm-1 align-right"},
 			{"columnName": "commission", "displayName": "Comm", "cssClassName": "col-sm-1 align-right"},
-			{"columnName": "costBasis", "displayName": "Cost Basis", "cssClassName": "col-sm-2 align-right"},
+			{"columnName": "costBasis", "displayName": "Cost Basis", "cssClassName": "col-sm-1 align-right"},
 			{"columnName": "marketValue", "displayName": "Market Val", "cssClassName": "col-sm-1 align-right"},
+			{"columnName": "pl", "displayName": "P&L", "cssClassName": "col-sm-1 align-right"},
 			{"columnName": "editField", "displayName": "", "cssClassName": "col-sm-1",
 				"customComponent": GridEditButtons,
 				"onDeleteClick": this.handleDeleteTransaction.bind(this),
@@ -106,7 +123,7 @@ class PortGrid extends React.Component {
 				<div>
 					<Griddle results={this.state.transactions} columnMetadata={colMeta}
 					showFilter={false} resultsPerPage="15" showSettings={true}
-          columns={["formattedExecDate", "transType", "ticker", "quantity", "currPrice", "price", "commission", "costBasis", "marketValue", "editField"]}/>
+          columns={["formattedExecDate", "transType", "ticker", "quantity", "currPrice", "startPrice", "commission", "costBasis", "marketValue", "pl", "editField"]}/>
 				</div>
 
 				<div>

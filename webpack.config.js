@@ -5,6 +5,8 @@ module.exports = {
 		filename: "bundle.js",
 		publicPath: '/'
 	},
+	// Enable sourcemaps for debugging webpack's output.
+	devtool: "source-map",
 	devServer: {
 		inline: true,
 		contentBase: './public'

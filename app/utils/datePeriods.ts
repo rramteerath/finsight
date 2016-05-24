@@ -1,0 +1,6 @@
+const DATE_PERIOD_ALL = 'all';
+const DATE_PERIOD_YTD = 'ytd';
+const DATE_PERIOD_QTD = 'qtd';
+const DATE_PERIOD_MTD = 'mtd';
+
+export { DATE_PERIOD_ALL, DATE_PERIOD_YTD, DATE_PERIOD_QTD, DATE_PERIOD_MTD };
