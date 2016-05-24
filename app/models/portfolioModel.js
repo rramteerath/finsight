@@ -33,22 +33,25 @@ function fillModel(transactions, tickers, transTypes, prices, dateRange) {
 
   // The market value calculation filters the prices list by a specific ticker
   // then gets the price from the latest date of this subset.
-	// TODO: Need to do some serious optimization here.
-	return transactions.map(trans => _.defaults(trans, {
+	return transactions.map(trans => {
+		const costBasis = calcCostBasis(priceSubset, trans, dateRange)
+		const mktVal = calcMarketVal(priceSubset, trans)
+
+		// startPrice will either be the price paid or the starting price in the date range
+		const startPrice = getResolvedStartPrice(priceSubset, trans, dateRange)
+
+		return _.defaults(trans, {
 			"ticker": _.find(tickers, k => k.id == trans.tickerId).symbol,
 			"transType": _.find(transTypes, m => m.id == trans.transactionTypeId).name,
-			// "formattedExecDate": new Date(trans.executionDate).toLocaleDateString('en-US'),
-			"formattedExecDate": new Date(getResolvedStartPrice(priceSubset, trans, dateRange).date).toLocaleDateString('en-US'),
-
-			// startPrice will either be the price paid or the starting price in the date range
-			"startPrice": getResolvedStartPrice(priceSubset, trans, dateRange).price,
-			"costBasis": numbers.formatCurrency(calcCostBasis(priceSubset, trans, dateRange)),
-			"marketValue": numbers.formatCurrency(calcMarketVal(priceSubset, trans)),
-			"pl": numbers.formatCurrency(calcMarketVal(priceSubset, trans) - calcCostBasis(priceSubset, trans, dateRange)),
+			"formattedExecDate": new Date(startPrice.date).toLocaleDateString('en-US'),
+			"startPrice": startPrice.price,
+			"costBasis": numbers.formatCurrency(costBasis),
+			"marketValue": numbers.formatCurrency(mktVal),
+			"pl": numbers.formatCurrency(mktVal - costBasis),
 			"editField": "",
 			"currPrice": getLatestPriceByTickerId(priceSubset, trans.tickerId).price
 		})
-	)
+	})
 }
 
 // Calculate cost basis for buys and reinvest
@@ -83,7 +86,7 @@ function getResolvedStartPrice(prices, transaction, dateRange) {
 // 1. Get all prices for current ticker.
 // 2. Get item with the max date from the the above result.
 // 3. Get the corresponding price from the above result.
-// Note that returned price is a price record with date, price, etc.
+// Returns: Note that returned price is a price record with date, price, etc.
 function getLatestPriceByTickerId(prices, tickerId) {
 	// const filtered = _.filter(prices, p => tickerId === p.tickerId)
 	// console.log("filtered", filtered)
@@ -106,6 +109,6 @@ function getEarliestPriceByTickerId(prices, tickerId) {
 }
 
 // getPortfolioTransactionsBase
-export function getPortfolioTransactionsBase(portfolioId) {
+function getPortfolioTransactionsBase(portfolioId) {
 	return axios.get(baseUrl + 'trans?portfolioId=' + portfolioId)
 }
