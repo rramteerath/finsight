@@ -6,7 +6,7 @@ App to learn React with more than just a trivial example.
 
 ## Install
 ```sh
-npm Install
+npm install
 ```
 
 ## Run  
