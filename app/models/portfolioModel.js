@@ -40,7 +40,7 @@ function fillModel(transactions, tickers, transTypes, prices, requestParams) {
   // The market value calculation filters the prices list by a specific ticker
   // then gets the price from the latest date of this subset.
 	const transList = transactions.map(trans => {
-		const costBasis = calcCostBasis(priceSubset, trans, requestParams.dateRange, requestParams.reinvAsGain)
+		const costBasis = calcCostBasis(priceSubset, trans, requestParams.dateRange, requestParams.reinvCalc)
 		const mktVal = calcMarketVal(priceSubset, trans)
 
 		// startPrice will either be the price paid or the starting price in the date range

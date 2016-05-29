@@ -3,7 +3,7 @@
 class TransRequestParams {
   constructor(public portfolioId: number,
     public dateRange: IDateRange,
-    public reinvCalc: string,
+    public reinvCalc: boolean,
     public durationHeld: string) {}
 }
 
