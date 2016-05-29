@@ -58,16 +58,19 @@ class PortGrid extends React.Component {
 			this.state.selectedDurationHeld)
 		portModel.getPortfolioTransactions(transParams)
 			.then((response) => {
-				const summary = response === [] ? {
-					"costBasis": response.map(trans => trans.costBasis).reduce((a, b) => a + b),
-					"mktVal": response.map(trans => trans.marketValue).reduce((a, b) => a + b),
-					"pl": response.map(trans => trans.pl).reduce((a, b) => a + b)
-				} :
+				const summary = response.length === 0 ?
 				{
 					"costBasis": 0,
 					"mktVal": 0,
 					"pl": 0
-			}
+				}
+				:
+				{
+					"costBasis": response.map(trans => trans.costBasis).reduce((a, b) => a + b),
+					"mktVal": response.map(trans => trans.marketValue).reduce((a, b) => a + b),
+					"pl": response.map(trans => trans.pl).reduce((a, b) => a + b)
+				}
+
 				this.setState({transactions: response, summary: summary}, () => {
 					this.toggleActivePeriod(this.state.selectedPeriod)
 
