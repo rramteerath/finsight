@@ -4,6 +4,8 @@ import * as transTypeModel from './transTypeModel'
 import * as priceModel from './priceModel'
 import * as numbers from '../utils/numbers'
 import { DateRange } from '../utils/DateRange'
+import { TransRequestParams } from '../data/TransRequestParams'
+import { DURATION_ALL, DURATION_LT, DURATION_ST } from '../utils/durationHeldConstants'
 
 const baseUrl = 'http://localhost:9001/'
 
@@ -13,32 +15,36 @@ export function getPortfolioList() {
 
 // Returns transactions for the specified id. Also returns tickers and transaction
 // types in order to map ticker and trans id to their names for display.
-export function getPortfolioTransactions(portfolioId, dateRange, reinvAsGain) {
-	return axios.all([getPortfolioTransactionsBase(portfolioId),
+export function getPortfolioTransactions(requestParams) {
+	return axios.all([getPortfolioTransactionsBase(requestParams.portfolioId),
 		tickerModel.getTickerList(),
 		transTypeModel.getTransTypeList(),
 		priceModel.getPriceList()])
 			.then(axios.spread((transactions, tickers, transTypes, prices) =>
-				fillModel(transactions.data, tickers.data, transTypes.data, prices.data, dateRange, reinvAsGain)))
+				fillModel(transactions.data,
+					tickers.data,
+					transTypes.data,
+					prices.data,
+					requestParams)))
 }
 
-function fillModel(transactions, tickers, transTypes, prices, dateRange, reinvAsGain) {
+function fillModel(transactions, tickers, transTypes, prices, requestParams) {
 
 	// Get subset of prices that fall within the date range
-	const priceSubset = prices.filter(p => (p.date >= dateRange.startDate.toISOString())
-		&& (p.date <= dateRange.endDate.toISOString()))
+	const priceSubset = prices.filter(p => (p.date >= requestParams.dateRange.startDate.toISOString())
+		&& (p.date <= requestParams.dateRange.endDate.toISOString()))
 
 	// Get ticker and trans type names from associated ids for display.
 	// Use _.defaults to combine these with the original transactions array
 
   // The market value calculation filters the prices list by a specific ticker
   // then gets the price from the latest date of this subset.
-	return transactions.map(trans => {
-		const costBasis = calcCostBasis(priceSubset, trans, dateRange, reinvAsGain)
+	const transList = transactions.map(trans => {
+		const costBasis = calcCostBasis(priceSubset, trans, requestParams.dateRange, requestParams.reinvAsGain)
 		const mktVal = calcMarketVal(priceSubset, trans)
 
 		// startPrice will either be the price paid or the starting price in the date range
-		const startPrice = getResolvedStartPrice(priceSubset, trans, dateRange)
+		const startPrice = getResolvedStartPrice(priceSubset, trans, requestParams.dateRange)
 
 		return _.defaults(trans, {
 			"ticker": _.find(tickers, k => k.id == trans.tickerId).symbol,
@@ -53,6 +59,20 @@ function fillModel(transactions, tickers, transTypes, prices, dateRange, reinvAs
 			"currPrice": getLatestPriceByTickerId(priceSubset, trans.tickerId).price
 		})
 	})
+
+	// Resolve the execution dates to include based on whether we want to see (unrealized)
+	// long term, short term or all gains/losses.
+	const currDate = new Date()
+	const execDate = new Date(currDate.setFullYear(currDate.getFullYear() - 1)).toISOString()
+
+	switch (requestParams.durationHeld) {
+		case DURATION_LT:
+			return transList.filter(t => t.executionDate < execDate)
+		case DURATION_ST:
+			return transList.filter(t => t.executionDate > execDate)
+		case DURATION_ALL:
+			return transList
+	}
 }
 
 // Calculate cost basis for buys and reinvest

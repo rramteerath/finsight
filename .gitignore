@@ -6,3 +6,5 @@ typings/
 app/components/Common/CurrencyFormatter.js
 app/components/Common/PLFormatter.js
 app/utils/NumberUtils.js
+app/data/TransRequestParams.js
+app/utils/durationHeldConstants.js

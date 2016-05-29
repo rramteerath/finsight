@@ -21,8 +21,10 @@
     ],
     "files": [
         "app/components/Common/ICurrencyFormatterProps.d.ts",
+        "app/data/TransRequestParams.ts",
         "app/utils/datePeriods.ts",
         "app/utils/DateRange.ts",
+        "app/utils/durationHeldConstants.ts",
         "app/utils/IDateRange.d.ts",
         "app/utils/NumberUtils.ts",
         "typings/globals/react-dom/index.d.ts",

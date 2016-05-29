@@ -1,4 +1,5 @@
 /// <reference path="./IDateRange.d.ts"/>
+
 import { DATE_PERIOD_ALL, DATE_PERIOD_YTD, DATE_PERIOD_QTD, DATE_PERIOD_MTD } from './datePeriods'
 
 class DateRange implements IDateRange {
