@@ -174,7 +174,7 @@ class PortGrid extends React.Component {
 		return (
 			// TODO: Move toolbar into separate component
 			<div>
-        <div className="btn-group">
+        <div className="btn-group btn-bar-div">
           <button type="button" id={DATE_PERIOD_ALL} className="btn btn-primary" onClick={() => this.handlePeriodChange(DATE_PERIOD_ALL)}>All Time</button>
           <button type="button" id={DATE_PERIOD_YTD} className="btn btn-primary" onClick={() => this.handlePeriodChange(DATE_PERIOD_YTD)}>YTD</button>
           <button type="button" id={DATE_PERIOD_QTD} className="btn btn-primary" onClick={() => this.handlePeriodChange(DATE_PERIOD_QTD)}>QTD</button>
@@ -185,7 +185,7 @@ class PortGrid extends React.Component {
 					<button type="button" id={DURATION_LT} className="btn btn-primary" onClick={() => this.handleDurationHeldChange(DURATION_LT)} title="Long Term">LT</button>
 					<button type="button" id={DURATION_ST} className="btn btn-primary" onClick={() => this.handleDurationHeldChange(DURATION_ST)} title="SHort Term">ST</button>
 				</div>
-				<div className="btn-group btn-bar-div">
+				<div className="btn-group">
 					<button type="button" id="reinvg" className="btn btn-primary" onClick={() => this.handleReinvCalcChange('reinvg')} title="P&L calc: Reinv as gain">Reinv $</button>
 					<button type="button" id="reinvb" className="btn btn-primary" onClick={() => this.handleReinvCalcChange('reinvb')} title="P&L calc: Reinv as buy">Reinv B</button>
 				</div>
