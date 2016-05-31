@@ -35,11 +35,16 @@
     "axios": "^0.8.0",
     "griddle-react": "^0.3.1",
     "history": "^1.13.1",
+    "immutable": "^3.8.1",
     "re-base": "^1.4.0",
     "react": "^0.14.3",
     "react-dom": "^0.14.3",
+    "react-redux": "^4.4.5",
     "react-router": "^1.0.1",
+    "react-router-redux": "^4.0.4",
     "react-widgets": "^3.1.7",
+    "redux": "^3.5.2",
+    "redux-thunk": "^2.1.0",
     "underscore": "^1.8.3",
     "webpack-dev-server": "^1.14.1"
   }

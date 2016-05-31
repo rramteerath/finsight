@@ -21,7 +21,9 @@
     ],
     "files": [
         "app/components/Common/ICurrencyFormatterProps.d.ts",
+        "app/containers/Root.ts",
         "app/data/TransRequestParams.ts",
+        "app/index.ts",
         "app/utils/datePeriods.ts",
         "app/utils/DateRange.ts",
         "app/utils/durationHeldConstants.ts",
