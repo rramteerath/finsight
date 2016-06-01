@@ -12,6 +12,7 @@ export class MainNav extends React.Component {
 
   render() {
     console.log("props", this.props)
+    // console.log("props json", toJSON(this.props))
     //console.log("sel port", this.props.selectedPortfolio.toJSON())
     const { history, children } = this.props
     return (
@@ -49,7 +50,9 @@ function mapStateToProps(state) {
     portfolios: state.get('portfolios'),
     selectedPortfolio: state.get('selectedPortfolio'),
     transactions: state.get('transactions'),
-    prices: state.get('prices')
+    prices: state.get('prices'),
+    tickers: state.get('tickers'),
+    transTypes: state.get('transTypes')
   };
 }
 

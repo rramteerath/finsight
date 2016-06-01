@@ -40,7 +40,14 @@ class Main extends React.Component {
 				</div>
 
 				<div>
-					<PortGrid selectedPortfolio={this.props.selectedPortfolio}/>
+					<PortGrid
+						selectedPortfolio={this.props.selectedPortfolio}
+						transactions={this.props.transactions}
+						prices={this.props.prices}
+						tickers={this.props.tickers}
+						transTypes={this.props.transTypes}
+						portfolioChanged={(portfolio) => this.props.portfolioChanged(portfolio)}
+					/>
 
           { /* This is how you add a comment to jsx/tsx... jeez */ }
           { /* <Hello /> */ }

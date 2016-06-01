@@ -28,7 +28,21 @@ export function getPortfolioTransactions(requestParams) {
 					requestParams)))
 }
 
-function fillModel(transactions, tickers, transTypes, prices, requestParams) {
+export function getTransactionRelatedData(portfolioId) {
+	return axios.all([getPortfolioTransactionsBase(portfolioId),
+		tickerModel.getTickerList(),
+		transTypeModel.getTransTypeList(),
+		priceModel.getPriceList()])
+			.then(axios.spread((transactions, tickers, transTypes, prices) => {
+				return { transactions: transactions.data,
+					tickers: tickers.data,
+					transTypes :transTypes.data,
+					prices: prices.data
+				}
+			}))
+}
+
+export function fillModel(transactions, tickers, transTypes, prices, requestParams) {
 
 	// Get subset of prices that fall within the date range
 	const priceSubset = prices.filter(p => (p.date >= requestParams.dateRange.startDate.toISOString())

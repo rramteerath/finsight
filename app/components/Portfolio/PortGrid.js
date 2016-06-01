@@ -39,49 +39,63 @@ class PortGrid extends React.Component {
 	componentWillReceiveProps(nextProps) {
 		//console.log("port grid cwrp sel port", this.props.selectedPortfolio.toJSON())
 		// if (nextProps.selectedPortfolio.get('id'))
-		this.getTransactions(nextProps.selectedPortfolio)
+		//this.getTransactions(nextProps.selectedPortfolio)
+		//
+		// if (this.props.selectedPortfolio.get('id'))
+		// 	this.props.loadTransactions(this.props.selectedPortfolio)
+		//nextProps.loadTransactions(nextProps.selectedPortfolio)
+
+		//this.props.portfolioChanged(this.props.selectedPortfolio)
 	}
 
 	componentWillUnmount() {
 		//console.log(this.state);
+
 	}
 
 	init(props) {
 		// if (this.props.selectedPortfolio.get('id')) {
 		// 	this.getTransactions(this.props.selectedPortfolio)
 		//}
+		//this.props.portfolioChanged(this.props.selectedPortfolio)
 	}
 
-	getTransactions(portfolio) {
+	getTransactions() {
 		// Parameters needed to select, filter desired transactions
-		const transParams = new TransRequestParams(portfolio.get('id'),
+		const transParams = new TransRequestParams(this.props.selectedPortfolio.get('id'),
 			DateRange.getDateRangeByPeriod(this.state.selectedPeriod),
 			this.state.reinvAsGain,
 			this.state.selectedDurationHeld)
-		portModel.getPortfolioTransactions(transParams)
-			.then((response) => {
-				const summary = response.length === 0 ?
-					{
-						"costBasis": 0,
-						"mktVal": 0,
-						"pl": 0
-					}
-					:
-					{
-						"costBasis": response.map(trans => trans.costBasis).reduce((a, b) => a + b),
-						"mktVal": response.map(trans => trans.marketValue).reduce((a, b) => a + b),
-						"pl": response.map(trans => trans.pl).reduce((a, b) => a + b)
-					}
 
-				this.setState({transactions: response, summary: summary}, () => {
-					this.toggleActivePeriod(this.state.selectedPeriod)
+		const response = portModel.fillModel(this.props.transactions.toJSON(),
+			this.props.tickers.toJSON(),
+			this.props.transTypes.toJSON(),
+			this.props.prices.toJSON(),
+			transParams)
 
-					// TODO: put these in constants
-					this.toggleReinvOption(this.state.reinvAsGain ? 'reinvg' : 'reinvb')
+		const summary = response.length === 0 ?
+			{
+				"costBasis": 0,
+				"mktVal": 0,
+				"pl": 0
+			}
+			:
+			{
+				"costBasis": response.map(trans => trans.costBasis).reduce((a, b) => a + b),
+				"mktVal": response.map(trans => trans.marketValue).reduce((a, b) => a + b),
+				"pl": response.map(trans => trans.pl).reduce((a, b) => a + b)
+			}
 
-					this.toggleDurationPeriod(this.state.selectedDurationHeld)
-				})
-			})
+		// this.setState({transactions: response, summary: summary}, () => {
+		// 	this.toggleActivePeriod(this.state.selectedPeriod)
+		//
+		// 	// TODO: put these in constants
+		// 	this.toggleReinvOption(this.state.reinvAsGain ? 'reinvg' : 'reinvb')
+		//
+		// 	this.toggleDurationPeriod(this.state.selectedDurationHeld)
+		// })
+
+		return response
 	}
 
 	// Called when the transactions in the current portfolio have been updated, added, deleted.
@@ -157,7 +171,7 @@ class PortGrid extends React.Component {
 
 
 	render() {
-		console.log("port grid sel port", this.props.selectedPortfolio.toJSON())
+		// console.log("port grid sel port", this.props.selectedPortfolio.toJSON())
 		const colMeta = [
 			{"columnName": "formattedExecDate", "displayName": "Exec Date", "cssClassName": "col-sm-2"},
 			{"columnName": "transType", "displayName": "Type", "cssClassName": "col-sm-1"},
@@ -196,7 +210,7 @@ class PortGrid extends React.Component {
 					<button type="button" id="reinvb" className="btn btn-primary" onClick={() => this.handleReinvCalcChange('reinvb')} title="P&L calc: Reinv as buy">Reinv B</button>
 				</div>
 				<div>
-					<Griddle results={this.state.transactions} columnMetadata={colMeta}
+					<Griddle results={this.getTransactions()} columnMetadata={colMeta}
 					showFilter={false} resultsPerPage="15" showSettings={true}
           columns={["formattedExecDate", "transType", "ticker", "quantity", "currPrice", "startPrice", "commission", "costBasis", "marketValue", "pl", "editField"]}/>
 				</div>

@@ -22,8 +22,30 @@ export function loadPortfolios() {
 
 export function portfolioChanged(portfolio) {
   console.log("portfolioChanged action creator called")
-  return {
-    type: 'PORTFOLIO_CHANGED',
-    portfolio
+
+  return (dispatch) => {
+    portModel.getTransactionRelatedData(portfolio.get('id'))
+			.then((transData) => {
+        console.log("transData", transData)
+        dispatch({
+          type: 'PORTFOLIO_CHANGED',
+          portfolio,
+          transData
+        })
+    })
+  }
+}
+
+export function loadTransactions(portfolio) {
+  console.log("loadTransactions action creator called")
+
+  return (dispatch) => {
+    portModel.getTransactionRelatedData(portfolio.get('id'))
+			.then((transData) => {
+        dispatch({
+          type: 'LOAD_TRANSACTIONS',
+          transData
+        })
+    })
   }
 }
