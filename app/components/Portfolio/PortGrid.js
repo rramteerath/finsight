@@ -1,5 +1,6 @@
 import React from 'react'
 import Griddle from 'griddle-react'
+import {Map, toJSON} from 'immutable';
 import * as portModel from '../../models/portfolioModel'
 import * as transModel from '../../models/transactionModel'
 import TransEdit from '../Transaction/TransEdit'
@@ -36,8 +37,9 @@ class PortGrid extends React.Component {
 
 	// Receive props when they change
 	componentWillReceiveProps(nextProps) {
-		if (nextProps.currentPortfolio.id)
-			this.getTransactions(nextProps.currentPortfolio)
+		//console.log("port grid cwrp sel port", this.props.selectedPortfolio.toJSON())
+		// if (nextProps.selectedPortfolio.get('id'))
+		this.getTransactions(nextProps.selectedPortfolio)
 	}
 
 	componentWillUnmount() {
@@ -45,14 +47,14 @@ class PortGrid extends React.Component {
 	}
 
 	init(props) {
-		if (this.props.currentPortfolio.id) {
-			this.getTransactions(this.props.currentPortfolio)
-		}
+		// if (this.props.selectedPortfolio.get('id')) {
+		// 	this.getTransactions(this.props.selectedPortfolio)
+		//}
 	}
 
 	getTransactions(portfolio) {
 		// Parameters needed to select, filter desired transactions
-		const transParams = new TransRequestParams(portfolio.id,
+		const transParams = new TransRequestParams(portfolio.get('id'),
 			DateRange.getDateRangeByPeriod(this.state.selectedPeriod),
 			this.state.reinvAsGain,
 			this.state.selectedDurationHeld)
@@ -84,7 +86,7 @@ class PortGrid extends React.Component {
 
 	// Called when the transactions in the current portfolio have been updated, added, deleted.
 	handleTransactionsChanged(portfolio) {
-		this.getTransactions(this.props.currentPortfolio)
+		this.getTransactions(this.props.selectedPortfolio)
 	}
 
 	handleEditTransaction(trans) {
@@ -95,7 +97,7 @@ class PortGrid extends React.Component {
 		transModel.deleteTransaction(trans)
 			.then((res) => {
 				// TODO: Check return codes
-				this.getTransactions(this.props.currentPortfolio)
+				this.getTransactions(this.props.selectedPortfolio)
 			})
 	}
 
@@ -106,14 +108,14 @@ class PortGrid extends React.Component {
 		// then pass it into a callback when doing setState...
 		this.setState({ selectedPeriod: period }, () => {
 
-			this.getTransactions(this.props.currentPortfolio)
+			this.getTransactions(this.props.selectedPortfolio)
 			this.toggleActivePeriod(period)
 		})
 	}
 
 	handleReinvCalcChange(val) {
 		this.setState({reinvAsGain: val === 'reinvg'}, () => {
-			this.getTransactions(this.props.currentPortfolio)
+			this.getTransactions(this.props.selectedPortfolio)
 			this.toggleReinvOption(val)
 		})
 	}
@@ -138,7 +140,7 @@ class PortGrid extends React.Component {
 
 	handleDurationHeldChange(duration) {
 		this.setState({selectedDurationHeld: duration}, () => {
-			this.getTransactions(this.props.currentPortfolio)
+			this.getTransactions(this.props.selectedPortfolio)
 			this.toggleDurationPeriod(duration)
 		})
 	}
@@ -155,6 +157,7 @@ class PortGrid extends React.Component {
 
 
 	render() {
+		console.log("port grid sel port", this.props.selectedPortfolio.toJSON())
 		const colMeta = [
 			{"columnName": "formattedExecDate", "displayName": "Exec Date", "cssClassName": "col-sm-2"},
 			{"columnName": "transType", "displayName": "Type", "cssClassName": "col-sm-1"},
@@ -208,7 +211,7 @@ class PortGrid extends React.Component {
 
 				<div>
 					<TransEdit
-						currentPortfolio={this.props.currentPortfolio}
+						currentPortfolio={this.props.selectedPortfolio}
 						selectedTransaction={this.state.selectedTransaction}
 						transactionsChanged={() => this.handleTransactionsChanged()} />
 				</div>
@@ -218,7 +221,7 @@ class PortGrid extends React.Component {
 }
 
 PortGrid.propTypes = {
-	currentPortfolio: React.PropTypes.object.isRequired
+	selectedPortfolio: React.PropTypes.object.isRequired
 }
 
 export default PortGrid;

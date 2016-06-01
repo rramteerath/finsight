@@ -1,5 +1,6 @@
 // es6
 import React from 'react'
+import {Map, toJSON} from 'immutable';
 import PortfolioList from './Portfolio/PortfolioList'
 import PortGrid from './Portfolio/PortGrid'
 import Hello from './testts'
@@ -14,26 +15,32 @@ class Main extends React.Component {
 	constructor(props) {
 		super(props)
 
-		this.state = {
-			currentPortfolio: {}
-		}
+		//console.log("main props", props.selectedPortfolio.toJSON())
+
+		// this.state = {
+		// 	currentPortfolio: {}
+		//}
 	}
 
 	// Create handler to process portfolio change i.e. moving from portfolio to another.
-	handlePortfolioChanged(portfolio) {
-		this.setState({ currentPortfolio: portfolio })
-	}
+	// handlePortfolioChanged(portfolio) {
+	// 	this.setState({ currentPortfolio: portfolio })
+	// }
 
 	render() {
 		return (
 			<div className="container">
 				<div className="well well-sm">
 					<span className="header-title">Search by portfolio:</span>
-					<PortfolioList portfolioChanged={(portfolio) => this.handlePortfolioChanged(portfolio)}/>
+					<PortfolioList
+						selectedPortfolio={this.props.selectedPortfolio}
+						portfolios={this.props.portfolios}
+						loadPortfolios={this.props.loadPortfolios}
+						portfolioChanged={(portfolio) => this.props.portfolioChanged(portfolio)}/>
 				</div>
 
 				<div>
-					<PortGrid currentPortfolio={this.state.currentPortfolio}/>
+					<PortGrid selectedPortfolio={this.props.selectedPortfolio}/>
 
           { /* This is how you add a comment to jsx/tsx... jeez */ }
           { /* <Hello /> */ }

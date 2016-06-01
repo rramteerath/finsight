@@ -10,7 +10,24 @@ import MainNavContainer from './components/MainNav'
 import { Provider } from 'react-redux'
 
 const store = configureStore()
-console.log("store.getState()", store.getState())
+
+// Set intial state
+store.dispatch({
+  type: 'SET_STATE',
+  state: {
+    portfolios: [],
+    selectedPortfolio: {},
+    transactions: [],
+    prices: [],
+    tickers: [],
+    transTypes: [],
+    period: 'all',
+    reinvCalc: 'reinvg'
+  }
+});
+
+//console.log("store.getState()", store.getState())
+
 // const history = syncHistoryWithStore(browserHistory, store)
 
 render(

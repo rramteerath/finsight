@@ -1,6 +1,8 @@
 import React from 'react';
 import {connect} from 'react-redux';
+import {Map, toJSON} from 'immutable';
 import * as actionCreators from '../actions/action_creators';
+import Main from './Main'
 
 import './main.sass';
 
@@ -10,6 +12,7 @@ export class MainNav extends React.Component {
 
   render() {
     console.log("props", this.props)
+    //console.log("sel port", this.props.selectedPortfolio.toJSON())
     const { history, children } = this.props
     return (
       <div className="main-container">
@@ -22,12 +25,18 @@ export class MainNav extends React.Component {
               <li><a href="/#main">Portfolios</a></li>
               <li><a href="/#price">Price</a></li>
             </ul>
-            <button onClick={() => this.props.loadTransactions(12)}></button>
+            <button onClick={() => this.props.loadTransactions(12)}>Add Trans</button>
           </div>
         </nav>
 
+        {/*}
         <div>
           {children}
+        </div>
+        */}
+
+        <div>
+          <Main {...this.props} />
         </div>
       </div>
     )
@@ -35,12 +44,12 @@ export class MainNav extends React.Component {
 }
 
 function mapStateToProps(state) {
-  console.log("mapsStateToProps - state", state)
+  //console.log("mapStateToProps state", state)
   return {
-    // transactions: state.get('transactions'),
-    // prices: state.get('prices')
-    transactions: state.transactions,
-    prices: state.prices
+    portfolios: state.get('portfolios'),
+    selectedPortfolio: state.get('selectedPortfolio'),
+    transactions: state.get('transactions'),
+    prices: state.get('prices')
   };
 }
 

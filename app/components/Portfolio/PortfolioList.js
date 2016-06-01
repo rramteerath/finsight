@@ -1,4 +1,5 @@
 import React from 'react'
+import {Map, toJSON} from 'immutable';
 import * as portModel from '../../models/portfolioModel'
 import './PortfolioList.sass'
 
@@ -7,10 +8,10 @@ class PortfolioList extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.state = {
-			portfolios: [],
-			selectedPortfolioName: ""
-		}
+		// this.state = {
+		// 	portfolios: [],
+		// 	selectedPortfolioName: ""
+		// }
 	}
 
 	// componentDidMount lifecycle event called after the component mounts the view
@@ -18,39 +19,42 @@ class PortfolioList extends React.Component {
 		this.init(this.props)
 	}
 
-	componentWillReceiveProps(nextProps) {
+	// componentWillReceiveProps(nextProps) {
+	// 	//console.log('nextProps', nextProps.portfolios.toJSON())
+	//
+	// }
 
-	}
+	// componentWillUnmount() {
+	// 	console.log(this.state)
+	// }
 
-	componentWillUnmount() {
-		console.log(this.state)
-	}
-
-	selectPortfolio(portfolio) {
-		// Call passed in function to handle this at a higher level
-		this.setState({ selectedPortfolioName: portfolio.name })
-		this.props.portfolioChanged(portfolio)
-	}
+	// selectPortfolio(portfolio) {
+	// 	// Call passed in function to handle this at a higher level
+	// 	this.setState({ selectedPortfolioName: portfolio.name })
+	// 	this.props.portfolioChanged(portfolio)
+	// }
 
 	init(props) {
-		portModel.getPortfolioList()
-			.then((response) => {
-				this.setState({ portfolios: _.sortBy(response.data, (s) => s.id) })
-
-				// Select first portfolio
-				this.selectPortfolio(_.find(response.data, (i) => i.id == 1))
-			})
+		//console.log('port list: props', props)
+		this.props.loadPortfolios()
+		// portModel.getPortfolioList()
+		// 	.then((response) => {
+		// 		this.setState({ portfolios: _.sortBy(response.data, (s) => s.id) })
+		//
+		// 		// Select first portfolio
+		// 		this.selectPortfolio(_.find(response.data, (i) => i.id == 1))
+		// 	})
 	}
 
 	render() {
 		return (
 			<div className="dropdown port-list">
-				<button className="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown">{this.state.selectedPortfolioName}
+				<button className="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown">{this.props.selectedPortfolio.get('name')}
 			  <span className="caret"></span></button>
 		    <ul className="dropdown-menu">
-		      {this.state.portfolios.map((repo, index) => {
+		      {this.props.portfolios.map((item, index) => {
 		      	return (
-							<li key={index}><a href="#" onClick={() => this.selectPortfolio(repo)}>{repo.name}</a></li>
+							<li key={index}><a href="#" onClick={() => this.props.portfolioChanged(item)}>{item.get('name')}</a></li>
 						)
 					})}
 			  </ul>
