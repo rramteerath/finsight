@@ -12,20 +12,6 @@ import '../styles/globalStyles.sass'
 // So const Main = (props) => {...}
 // becomes...
 class Main extends React.Component {
-	constructor(props) {
-		super(props)
-
-		//console.log("main props", props.selectedPortfolio.toJSON())
-
-		// this.state = {
-		// 	currentPortfolio: {}
-		//}
-	}
-
-	// Create handler to process portfolio change i.e. moving from portfolio to another.
-	// handlePortfolioChanged(portfolio) {
-	// 	this.setState({ currentPortfolio: portfolio })
-	// }
 
 	render() {
 		return (

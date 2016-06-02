@@ -17,9 +17,9 @@ function loadPortfolios(state, portData) {
 }
 
 function portfolioChanged(state, portfolio, transData) {
-  console.log('portfolioChanged transData', transData)
   const itemIndex = state.get('portfolios').findIndex((item) =>
     item.get('id') === portfolio.get('id'))
+
   return state.set('selectedPortfolio', state.get('portfolios').get(itemIndex))
     .set('transactions', fromJS(transData.transactions))
     .set('prices', fromJS(transData.prices))
@@ -28,10 +28,7 @@ function portfolioChanged(state, portfolio, transData) {
 }
 
 function loadTransactions(state, transData) {
-  // return state
-  const newTransData = state.set('transactions', transData.transactions)
-  console.log("newTransData", newTransData.toJSON())
-  return newTransData
+  return state.set('transactions', transData.transactions)
 }
 
 function periodChanged(state, period) {

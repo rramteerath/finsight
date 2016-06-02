@@ -7,7 +7,8 @@ export function loadTransactions(portfolioId) {
   }
 }
 
-// Use redux-thunk to create async action creator
+// Use redux-thunk middleware to create async action creator
+// Middleware loaded when creating redux store
 export function loadPortfolios() {
   return (dispatch) => {
     portModel.getPortfolioList()
@@ -21,12 +22,9 @@ export function loadPortfolios() {
 }
 
 export function portfolioChanged(portfolio) {
-  console.log("portfolioChanged action creator called")
-
   return (dispatch) => {
     portModel.getTransactionRelatedData(portfolio.get('id'))
 			.then((transData) => {
-        console.log("transData", transData)
         dispatch({
           type: 'PORTFOLIO_CHANGED',
           portfolio,
@@ -37,8 +35,6 @@ export function portfolioChanged(portfolio) {
 }
 
 export function loadTransactions(portfolio) {
-  console.log("loadTransactions action creator called")
-
   return (dispatch) => {
     portModel.getTransactionRelatedData(portfolio.get('id'))
 			.then((transData) => {
