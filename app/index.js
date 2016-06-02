@@ -4,9 +4,10 @@ import { render } from 'react-dom'
 import { browserHistory } from 'react-router'
 // import { syncHistoryWithStore } from 'react-router-redux'
 import Root from './containers/Root'
-import configureStore from './store/configureStore'
+import { getInitialState, configureStore } from './store/configureStore'
 // import MainNav from './components/MainNav'
 import MainNavContainer from './components/MainNav'
+import { toJSON } from 'immutable'
 import { Provider } from 'react-redux'
 
 const store = configureStore()
@@ -14,20 +15,10 @@ const store = configureStore()
 // Set intial state
 store.dispatch({
   type: 'SET_STATE',
-  state: {
-    portfolios: [],
-    selectedPortfolio: {},
-    transactions: [],
-    prices: [],
-    tickers: [],
-    transTypes: [],
-    period: 'all',
-    reinvCalc: 'reinvg'
-  }
+  state: getInitialState()
 });
 
-//console.log("store.getState()", store.getState())
-
+// console.log("store.getState()", store.getState().toJSON())
 // const history = syncHistoryWithStore(browserHistory, store)
 
 render(

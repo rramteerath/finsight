@@ -8,6 +8,7 @@ import GridEditButtons from './GridEditButtons'
 import { DateRange } from '../../utils/DateRange'
 import { DATE_PERIOD_ALL, DATE_PERIOD_YTD, DATE_PERIOD_QTD, DATE_PERIOD_MTD } from '../../utils/datePeriods'
 import { DURATION_ALL, DURATION_LT, DURATION_ST } from '../../utils/durationHeldConstants'
+import { REINV_CALC_GAIN, REINV_CALC_BUY } from '../../utils/reinvCalcConstants'
 import { CurrencyFormatter } from '../Common/CurrencyFormatter'
 import { PLFormatter } from '../Common/PLFormatter'
 import { NumberUtils } from '../../utils/NumberUtils';
@@ -21,81 +22,22 @@ class PortGrid extends React.Component {
 		super(props);
 
 		this.state = {
-			transactions: [],
 			selectedTransaction: {},
-			selectedPeriod: DATE_PERIOD_ALL,
-			summary: {},
-			reinvAsGain: true,
-			selectedDurationHeld: DURATION_ALL
 		}
-	}
-
-	// componentDidMount lifecycle event called after the component mounts the view
-	componentDidMount() {
-		this.init(this.props);
-	}
-
-	// Receive props when they change
-	componentWillReceiveProps(nextProps) {
-		//console.log("port grid cwrp sel port", this.props.selectedPortfolio.toJSON())
-		// if (nextProps.selectedPortfolio.get('id'))
-		//this.getTransactions(nextProps.selectedPortfolio)
-		//
-		// if (this.props.selectedPortfolio.get('id'))
-		// 	this.props.loadTransactions(this.props.selectedPortfolio)
-		//nextProps.loadTransactions(nextProps.selectedPortfolio)
-
-		//this.props.portfolioChanged(this.props.selectedPortfolio)
-	}
-
-	componentWillUnmount() {
-		//console.log(this.state);
-
-	}
-
-	init(props) {
-		// if (this.props.selectedPortfolio.get('id')) {
-		// 	this.getTransactions(this.props.selectedPortfolio)
-		//}
-		//this.props.portfolioChanged(this.props.selectedPortfolio)
 	}
 
 	getTransactions() {
 		// Parameters needed to select, filter desired transactions
 		const transParams = new TransRequestParams(this.props.selectedPortfolio.get('id'),
-			DateRange.getDateRangeByPeriod(this.state.selectedPeriod),
-			this.state.reinvAsGain,
-			this.state.selectedDurationHeld)
+			DateRange.getDateRangeByPeriod(this.props.period),
+			this.props.reinvCalc === REINV_CALC_GAIN,
+			this.props.durationHeld)
 
-		const response = portModel.fillModel(this.props.transactions.toJSON(),
+		return portModel.fillModel(this.props.transactions.toJSON(),
 			this.props.tickers.toJSON(),
 			this.props.transTypes.toJSON(),
 			this.props.prices.toJSON(),
 			transParams)
-
-		const summary = response.length === 0 ?
-			{
-				"costBasis": 0,
-				"mktVal": 0,
-				"pl": 0
-			}
-			:
-			{
-				"costBasis": response.map(trans => trans.costBasis).reduce((a, b) => a + b),
-				"mktVal": response.map(trans => trans.marketValue).reduce((a, b) => a + b),
-				"pl": response.map(trans => trans.pl).reduce((a, b) => a + b)
-			}
-
-		// this.setState({transactions: response, summary: summary}, () => {
-		// 	this.toggleActivePeriod(this.state.selectedPeriod)
-		//
-		// 	// TODO: put these in constants
-		// 	this.toggleReinvOption(this.state.reinvAsGain ? 'reinvg' : 'reinvb')
-		//
-		// 	this.toggleDurationPeriod(this.state.selectedDurationHeld)
-		// })
-
-		return response
 	}
 
 	// Called when the transactions in the current portfolio have been updated, added, deleted.
@@ -115,63 +57,25 @@ class PortGrid extends React.Component {
 			})
 	}
 
-	handlePeriodChange(period) {
-		// Note that setState does not immediately mutate this.state.
-		// See https://facebook.github.io/react/docs/component-api.html
-		// If you need to do something that depends on the state you just set
-		// then pass it into a callback when doing setState...
-		this.setState({ selectedPeriod: period }, () => {
-
-			this.getTransactions(this.props.selectedPortfolio)
-			this.toggleActivePeriod(period)
-		})
+	getToolbarButtonClasses(selectedPeriod, period) {
+		return "btn btn-primary " + ((selectedPeriod === period) ? "active" : "")
 	}
-
-	handleReinvCalcChange(val) {
-		this.setState({reinvAsGain: val === 'reinvg'}, () => {
-			this.getTransactions(this.props.selectedPortfolio)
-			this.toggleReinvOption(val)
-		})
-	}
-
-	toggleReinvOption(val) {
-		$("#reinvg").removeClass("active");
-		$("#reinvb").removeClass("active");
-
-		$("#" + val).addClass("active");
-	}
-
-	toggleActivePeriod(period) {
-		// reset all buttons
-		$("#" + DATE_PERIOD_ALL).removeClass("active");
-		$("#" + DATE_PERIOD_YTD).removeClass("active");
-		$("#" + DATE_PERIOD_QTD).removeClass("active");
-		$("#" + DATE_PERIOD_MTD).removeClass("active");
-
-		// set the requested one
-		$("#" + period).addClass("active");
-	}
-
-	handleDurationHeldChange(duration) {
-		this.setState({selectedDurationHeld: duration}, () => {
-			this.getTransactions(this.props.selectedPortfolio)
-			this.toggleDurationPeriod(duration)
-		})
-	}
-
-	toggleDurationPeriod(duration) {
-		// reset all buttons
-		$("#" + DURATION_ALL).removeClass("active");
-		$("#" + DURATION_LT).removeClass("active");
-		$("#" + DURATION_ST).removeClass("active");
-
-		// set the requested one
-		$("#" + duration).addClass("active");
-	}
-
 
 	render() {
-		// console.log("port grid sel port", this.props.selectedPortfolio.toJSON())
+		const transactions = this.getTransactions()
+		const summary = transactions.length === 0 ?
+			{
+				"costBasis": 0,
+				"mktVal": 0,
+				"pl": 0
+			}
+			:
+			{
+				"costBasis": transactions.map(trans => trans.costBasis).reduce((a, b) => a + b),
+				"mktVal": transactions.map(trans => trans.marketValue).reduce((a, b) => a + b),
+				"pl": transactions.map(trans => trans.pl).reduce((a, b) => a + b)
+			}
+
 		const colMeta = [
 			{"columnName": "formattedExecDate", "displayName": "Exec Date", "cssClassName": "col-sm-2"},
 			{"columnName": "transType", "displayName": "Type", "cssClassName": "col-sm-1"},
@@ -195,31 +99,31 @@ class PortGrid extends React.Component {
 			// TODO: Move toolbar into separate component
 			<div>
         <div className="btn-group btn-bar-div">
-          <button type="button" id={DATE_PERIOD_ALL} className="btn btn-primary" onClick={() => this.handlePeriodChange(DATE_PERIOD_ALL)}>All Time</button>
-          <button type="button" id={DATE_PERIOD_YTD} className="btn btn-primary" onClick={() => this.handlePeriodChange(DATE_PERIOD_YTD)}>YTD</button>
-          <button type="button" id={DATE_PERIOD_QTD} className="btn btn-primary" onClick={() => this.handlePeriodChange(DATE_PERIOD_QTD)}>QTD</button>
-          <button type="button" id={DATE_PERIOD_MTD} className="btn btn-primary" onClick={() => this.handlePeriodChange(DATE_PERIOD_MTD)}>MTD</button>
+          <button type="button" id={DATE_PERIOD_ALL} className={this.getToolbarButtonClasses(this.props.period, DATE_PERIOD_ALL)} onClick={() => this.props.periodChanged(DATE_PERIOD_ALL)}>All Time</button>
+          <button type="button" id={DATE_PERIOD_YTD} className={this.getToolbarButtonClasses(this.props.period, DATE_PERIOD_YTD)} onClick={() => this.props.periodChanged(DATE_PERIOD_YTD)}>YTD</button>
+          <button type="button" id={DATE_PERIOD_QTD} className={this.getToolbarButtonClasses(this.props.period, DATE_PERIOD_QTD)} onClick={() => this.props.periodChanged(DATE_PERIOD_QTD)}>QTD</button>
+          <button type="button" id={DATE_PERIOD_MTD} className={this.getToolbarButtonClasses(this.props.period, DATE_PERIOD_MTD)} onClick={() => this.props.periodChanged(DATE_PERIOD_MTD)}>MTD</button>
         </div>
 				<div className="btn-group btn-bar-div">
-					<button type="button" id={DURATION_ALL} className="btn btn-primary" onClick={() => this.handleDurationHeldChange(DURATION_ALL)} title="All">All</button>
-					<button type="button" id={DURATION_LT} className="btn btn-primary" onClick={() => this.handleDurationHeldChange(DURATION_LT)} title="Long Term">LT</button>
-					<button type="button" id={DURATION_ST} className="btn btn-primary" onClick={() => this.handleDurationHeldChange(DURATION_ST)} title="SHort Term">ST</button>
+					<button type="button" id={DURATION_ALL} className={this.getToolbarButtonClasses(this.props.durationHeld, DURATION_ALL)} onClick={() => this.props.durationHeldChanged(DURATION_ALL)} title="All">All</button>
+					<button type="button" id={DURATION_LT} className={this.getToolbarButtonClasses(this.props.durationHeld, DURATION_LT)} onClick={() => this.props.durationHeldChanged(DURATION_LT)} title="Long Term">LT</button>
+					<button type="button" id={DURATION_ST} className={this.getToolbarButtonClasses(this.props.durationHeld, DURATION_ST)} onClick={() => this.props.durationHeldChanged(DURATION_ST)} title="SHort Term">ST</button>
 				</div>
 				<div className="btn-group">
-					<button type="button" id="reinvg" className="btn btn-primary" onClick={() => this.handleReinvCalcChange('reinvg')} title="P&L calc: Reinv as gain">Reinv $</button>
-					<button type="button" id="reinvb" className="btn btn-primary" onClick={() => this.handleReinvCalcChange('reinvb')} title="P&L calc: Reinv as buy">Reinv B</button>
+					<button type="button" id={REINV_CALC_GAIN} className={this.getToolbarButtonClasses(this.props.reinvCalc, REINV_CALC_GAIN)} onClick={() => this.props.reinvCalcChanged(REINV_CALC_GAIN)} title="P&L calc: Reinv as gain">Reinv $</button>
+					<button type="button" id={REINV_CALC_BUY} className={this.getToolbarButtonClasses(this.props.reinvCalc, REINV_CALC_BUY)} onClick={() => this.props.reinvCalcChanged(REINV_CALC_BUY)} title="P&L calc: Reinv as buy">Reinv B</button>
 				</div>
 				<div>
-					<Griddle results={this.getTransactions()} columnMetadata={colMeta}
+					<Griddle results={transactions} columnMetadata={colMeta}
 					showFilter={false} resultsPerPage="15" showSettings={true}
           columns={["formattedExecDate", "transType", "ticker", "quantity", "currPrice", "startPrice", "commission", "costBasis", "marketValue", "pl", "editField"]}/>
 				</div>
 
 				<div className="row">
 					<div className="col-sm-8 summary">Totals</div>
-					<div className="col-sm-1 summary align-right"><CurrencyFormatter data={(this.state.summary.costBasis)} /></div>
-					<div className="col-sm-1 summary align-right"><CurrencyFormatter data={(this.state.summary.mktVal)} /></div>
-					<div className="col-sm-1 summary align-right"><PLFormatter data={(this.state.summary.pl)} /></div>
+					<div className="col-sm-1 summary align-right"><CurrencyFormatter data={(summary.costBasis)} /></div>
+					<div className="col-sm-1 summary align-right"><CurrencyFormatter data={(summary.mktVal)} /></div>
+					<div className="col-sm-1 summary align-right"><PLFormatter data={(summary.pl)} /></div>
 					<div className="col-sm-1 summary"></div>
 				</div>
 

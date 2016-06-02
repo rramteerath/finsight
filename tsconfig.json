@@ -27,6 +27,7 @@
         "app/utils/durationHeldConstants.ts",
         "app/utils/IDateRange.d.ts",
         "app/utils/NumberUtils.ts",
+        "app/utils/reinvCalcConstants.ts",
         "typings/globals/react-dom/index.d.ts",
         "typings/globals/react/index.d.ts",
         "typings/index.d.ts",

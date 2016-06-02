@@ -40,6 +40,8 @@ class Main extends React.Component {
 				</div>
 
 				<div>
+					<PortGrid {...this.props} />
+					{/*}
 					<PortGrid
 						selectedPortfolio={this.props.selectedPortfolio}
 						transactions={this.props.transactions}
@@ -48,6 +50,7 @@ class Main extends React.Component {
 						transTypes={this.props.transTypes}
 						portfolioChanged={(portfolio) => this.props.portfolioChanged(portfolio)}
 					/>
+					*/}
 
           { /* This is how you add a comment to jsx/tsx... jeez */ }
           { /* <Hello /> */ }

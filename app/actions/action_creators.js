@@ -49,3 +49,24 @@ export function loadTransactions(portfolio) {
     })
   }
 }
+
+export function periodChanged(period) {
+  return {
+    type: 'PERIOD_CHANGED',
+    period
+  }
+}
+
+export function durationHeldChanged(duration) {
+  return {
+    type: 'DURATION_HELD_CHANGED',
+    duration
+  }
+}
+
+export function reinvCalcChanged(reinvCalc) {
+  return {
+    type: 'REINV_CALC_CHANGED',
+    reinvCalc
+  }
+}

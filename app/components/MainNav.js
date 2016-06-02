@@ -26,7 +26,6 @@ export class MainNav extends React.Component {
               <li><a href="/#main">Portfolios</a></li>
               <li><a href="/#price">Price</a></li>
             </ul>
-            <button onClick={() => this.props.loadTransactions(12)}>Add Trans</button>
           </div>
         </nav>
 
@@ -52,7 +51,10 @@ function mapStateToProps(state) {
     transactions: state.get('transactions'),
     prices: state.get('prices'),
     tickers: state.get('tickers'),
-    transTypes: state.get('transTypes')
+    transTypes: state.get('transTypes'),
+    period: state.get('period'),
+    durationHeld: state.get('durationHeld'),
+    reinvCalc: state.get('reinvCalc')
   };
 }
 

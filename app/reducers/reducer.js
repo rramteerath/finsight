@@ -34,12 +34,17 @@ function loadTransactions(state, transData) {
   return newTransData
 }
 
-// function loadPortfolios(state, portData) {
-//   console.log('portData', portData)
-//   const newState = state.update('portfolios', (portfolios) => portfolios.merge(portData.data))
-//   console.log("newState", newState.toJSON())
-//   return newState
-// }
+function periodChanged(state, period) {
+  return state.set('period', period);
+}
+
+function durationHeldChanged(state, duration) {
+  return state.set('durationHeld', duration);
+}
+
+function reinvCalcChanged(state, reinvCalc) {
+  return state.set('reinvCalc', reinvCalc);
+}
 
 export default function(state = Map(), action) {
   switch (action.type) {
@@ -48,10 +53,15 @@ export default function(state = Map(), action) {
     case 'LOAD_PORTFOLIOS':
       return loadPortfolios(state, action.portfolios)
     case 'PORTFOLIO_CHANGED':
-      console.log("action", action)
       return portfolioChanged(state, action.portfolio, action.transData)
     case 'LOAD_TRANSACTIONS':
       return loadTransactions(state, action.transData)
+    case 'PERIOD_CHANGED':
+      return periodChanged(state, action.period)
+    case 'DURATION_HELD_CHANGED':
+      return durationHeldChanged(state, action.duration)
+    case 'REINV_CALC_CHANGED':
+      return reinvCalcChanged(state, action.reinvCalc)
   }
 
   return state;

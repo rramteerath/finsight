@@ -19,14 +19,17 @@ class PortfolioList extends React.Component {
 		this.init(this.props)
 	}
 
-	// componentWillReceiveProps(nextProps) {
+	componentWillReceiveProps(nextProps) {
+		// if (this.props.portfolios.size > 0 &&
+		// 	this.nextProps.selectedPortfolio.get('id') != this.props.selectedPortfolio.get('id'))
+		// 	this.props.portfolioChanged(this.nextProps.selectedPortfolio)
 	// 	//console.log('nextProps', nextProps.portfolios.toJSON())
 	//
 	// }
 
 	// componentWillUnmount() {
 	// 	console.log(this.state)
-	// }
+	}
 
 	// selectPortfolio(portfolio) {
 	// 	// Call passed in function to handle this at a higher level
@@ -47,6 +50,13 @@ class PortfolioList extends React.Component {
 	}
 
 	render() {
+		// console.log("this.props.portfolios", this.props.portfolios.size)
+		// console.log("this.props.portfolios.toJSON()[0]", this.props.portfolios.toJSON()[0])
+		// console.log("this.props.portfolios.get(0)", this.props.portfolios.get(0))
+		// if (this.props.portfolios.size > 0 &&
+		// 	this.props.selectedPortfolio.get('id') != this.props.portfolios.get(2).get('id'))
+		// 	this.props.portfolioChanged(this.props.portfolios.get(2))
+
 		return (
 			<div className="dropdown port-list">
 				<button className="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown">{this.props.selectedPortfolio.get('name')}
