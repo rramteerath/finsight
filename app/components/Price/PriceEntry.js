@@ -1,15 +1,19 @@
 import React from 'react'
+import {connect} from 'react-redux';
+import * as actionCreators from '../../actions/action_creators';
 import * as tickerModel from '../../models/tickerModel'
 import * as priceModel from '../../models/priceModel'
+import MainNavBar from '../MainNavBar'
+
 import '../../styles/globalStyles.sass'
 
-class PriceEntry extends React.Component {
+export class PriceEntry extends React.Component {
   // With es6, the getInitialState is replaced by the constructor.
   constructor(props) {
     super(props)
 
     // Initialize state
-    this.resetState()    
+    this.resetState()
   }
 
   componentDidMount() {
@@ -21,7 +25,7 @@ class PriceEntry extends React.Component {
     $( "#date" ).datepicker()
     this.dateInput.value = new Date(this.state.date).toLocaleDateString('en-US')
   }
-  
+
   resetState() {
     if (!this.state)
       this.state = {
@@ -84,7 +88,7 @@ class PriceEntry extends React.Component {
        })
     })
   }
-  
+
   handleClear() {
 		//this.priceEntryForm.reset()
 		this.resetState()
@@ -100,66 +104,81 @@ class PriceEntry extends React.Component {
 
   render() {
     return (
-      <div className="container">
-        <form className="form-horizontal" role="form" id="priceEntryForm" ref={(ref) => this.priceEntryForm = ref}>
+      <div className="main-container">
+        <MainNavBar />
+        <div className="container">
+          <form className="form-horizontal" role="form" id="priceEntryForm" ref={(ref) => this.priceEntryForm = ref}>
 
-          <div className="form-group">
-            <div className="col-sm-12"><h3>Enter Price History</h3></div>
-          </div>
-
-          <div className="form-group">
-            <label className="control-label col-sm-2">Closing Date</label>
-            <div className="col-sm-2">
-              <input type="text" className="form-control" id="date" placeholder="date"
-                ref={(ref) => this.dateInput = ref}>
-              </input>
+            <div className="form-group">
+              <div className="col-sm-12"><h3>Enter Price History</h3></div>
             </div>
-            {
-              this.state.haveDate ? null :
-              <button type="button" className="col-sm-1 btn btn-success" onClick={() => this.handleDateEntry()}>
-                Submit
-              </button>
-            }
-            <div className="col-sm-7"></div>
-          </div>
 
-          {this.state.allTickers.map((repo, index) => {
-            return (
-                <div key={index} className="form-group">
-                  <label className="control-label col-sm-2">{repo.symbol}</label>
-                  <div className="col-sm-2">
-                    <input type="text" className="form-control" id={repo.symbol} placeholder="price"
-
-                      onChange={(i) => this.handleTextChange(i)}/>
-                  </div>
-                  <div className="col-sm-8"></div>
-                </div>
-            )
-          })}
-
-          <div className="form-group">
-            <div className="col-sm-2">
-            </div>
-            <div className="col-sm-2 align-right">
-              {
-                this.state.haveDate ?
-                <div>
-                  <button type="button" className="btn btn-success" onClick={() => this.handleSubmit()}>
-                    Submit
-                  </button>&nbsp;
-                  <button type="button" className="btn btn-success" onClick={() => this.handleClear()}>
-                    Cancel
-                  </button>
-                </div>
-                : null
-              }
+            <div className="form-group">
+              <label className="control-label col-sm-2">Closing Date</label>
+              <div className="col-sm-2">
+                <input type="text" className="form-control" id="date" placeholder="date"
+                  ref={(ref) => this.dateInput = ref}>
+                </input>
               </div>
-            <div className="col-sm-8"></div>
-          </div>
-        </form>
+              {
+                this.state.haveDate ? null :
+                <button type="button" className="col-sm-1 btn btn-success" onClick={() => this.handleDateEntry()}>
+                  Submit
+                </button>
+              }
+              <div className="col-sm-7"></div>
+            </div>
+
+            {this.state.allTickers.map((repo, index) => {
+              return (
+                  <div key={index} className="form-group">
+                    <label className="control-label col-sm-2">{repo.symbol}</label>
+                    <div className="col-sm-2">
+                      <input type="text" className="form-control" id={repo.symbol} placeholder="price"
+
+                        onChange={(i) => this.handleTextChange(i)}/>
+                    </div>
+                    <div className="col-sm-8"></div>
+                  </div>
+              )
+            })}
+
+            <div className="form-group">
+              <div className="col-sm-2">
+              </div>
+              <div className="col-sm-2 align-right">
+                {
+                  this.state.haveDate ?
+                  <div>
+                    <button type="button" className="btn btn-success" onClick={() => this.handleSubmit()}>
+                      Submit
+                    </button>&nbsp;
+                    <button type="button" className="btn btn-success" onClick={() => this.handleClear()}>
+                      Cancel
+                    </button>
+                  </div>
+                  : null
+                }
+                </div>
+              <div className="col-sm-8"></div>
+            </div>
+          </form>
+        </div>
       </div>
     )
   }
 }
 
-export default PriceEntry
+function mapStateToProps(state) {
+  //console.log("mapStateToProps state", state)
+  return {
+    portfolios: state.get('portfolios'),
+    selectedPortfolio: state.get('selectedPortfolio'),
+    prices: state.get('prices'),
+    tickers: state.get('tickers'),
+    transTypes: state.get('transTypes')
+  };
+}
+
+const PriceEntryContainer = connect(mapStateToProps, actionCreators)(PriceEntry);
+export default PriceEntryContainer

@@ -1,16 +1,25 @@
 // import 'babel-polyfill'
 import React from 'react'
 import { render } from 'react-dom'
-import { browserHistory } from 'react-router'
+import {Router, Route, hashHistory} from 'react-router';
 // import { syncHistoryWithStore } from 'react-router-redux'
 import Root from './containers/Root'
 import { getInitialState, configureStore } from './store/configureStore'
 // import MainNav from './components/MainNav'
-import MainNavContainer from './components/MainNav'
+import MainContainer from './components/Main'
+import PriceEntryContainer from './components/Price/PriceEntry'
 import { toJSON } from 'immutable'
 import { Provider } from 'react-redux'
+// import routes from './config/routes'
+import App from './App';
 
 const store = configureStore()
+
+const routes = <Route component={App}>
+  <Route path="/" component={MainContainer} />
+  <Route path="/main" component={MainContainer} />
+  <Route path="/price" component={PriceEntryContainer} />
+</Route>;
 
 // Set intial state
 store.dispatch({
@@ -23,7 +32,14 @@ store.dispatch({
 
 render(
   <Provider store={store}>
-    <MainNavContainer />
+    <Router history={hashHistory}>{routes}</Router>
   </Provider>,
   document.getElementById('app')
+
+// render(
+//   <Provider store={store}>
+//     <MainNavBar />
+//   </Provider>,
+//   document.getElementById('app')
+
 )

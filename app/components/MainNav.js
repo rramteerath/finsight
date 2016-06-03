@@ -29,16 +29,21 @@ export class MainNav extends React.Component {
           </div>
         </nav>
 
-        {/*}
+
         <div>
           {children}
         </div>
-        */}
 
+
+        {/*}
         <div>
           <Main {...this.props} />
         </div>
+        */}
+
+        
       </div>
+
     )
   }
 }
