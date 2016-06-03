@@ -11,6 +11,7 @@ export function getInitialState() {
     portfolios: [],
     selectedPortfolio: {},
     transactions: [],
+    selectedTransaction: {},
     prices: [],
     tickers: [],
     transTypes: [],

@@ -66,3 +66,16 @@ export function reinvCalcChanged(reinvCalc) {
     reinvCalc
   }
 }
+
+export function selectTransaction(transaction) {
+  return {
+    type: 'SELECT_TRANSACTION',
+    transaction
+  }
+}
+
+export function cancelTransactionEdit() {
+  return {
+    type: 'CANCEL_TRANSACTION_EDIT',
+  }
+}

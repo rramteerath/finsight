@@ -44,6 +44,7 @@ function mapStateToProps(state) {
     portfolios: state.get('portfolios'),
     selectedPortfolio: state.get('selectedPortfolio'),
     transactions: state.get('transactions'),
+    selectedTransaction: state.get('selectedTransaction'),
     prices: state.get('prices'),
     tickers: state.get('tickers'),
     transTypes: state.get('transTypes'),

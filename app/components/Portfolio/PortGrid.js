@@ -91,7 +91,7 @@ class PortGrid extends React.Component {
 			{"columnName": "editField", "displayName": "", "cssClassName": "col-sm-1",
 				"customComponent": GridEditButtons,
 				"onDeleteClick": this.handleDeleteTransaction.bind(this),
-				"onEditClick": this.handleEditTransaction.bind(this)
+				"onEditClick": this.props.selectTransaction.bind(this)
 			}
 		]
 
@@ -130,8 +130,11 @@ class PortGrid extends React.Component {
 				<div>
 					<TransEdit
 						currentPortfolio={this.props.selectedPortfolio}
-						selectedTransaction={this.state.selectedTransaction}
-						transactionsChanged={() => this.handleTransactionsChanged()} />
+						tickers={this.props.tickers}
+						transTypes={this.props.transTypes}
+						selectedTransaction={this.props.selectedTransaction}
+						transactionsChanged={() => this.handleTransactionsChanged()}
+						cancelTransactionEdit={() => this.props.cancelTransactionEdit()} />
 				</div>
 			</div>
 		)

@@ -1,5 +1,6 @@
 import React from 'react'
 import Combobox from 'react-widgets/lib/Combobox'
+import { toJSON } from 'immutable'
 import * as tickerModel from '../../models/tickerModel'
 import * as transTypeModel from '../../models/transTypeModel'
 import * as transactionModel from '../../models/transactionModel'
@@ -52,17 +53,17 @@ class TransEdit extends React.Component {
 		// with date picker, autocomplete. Plus this way I don't have to write an
 		// onChange event handler for every element. Just get/set the element value
 		// using the ref. Therefore these are uncontrolled compoenets in react speak.
-		this.dateInput.value = nextProps.selectedTransaction.formattedExecDate
-		this.tickerInput.value = nextProps.selectedTransaction.ticker
-		this.quantInput.value = nextProps.selectedTransaction.quantity
-		this.commInput.value = nextProps.selectedTransaction.commission
-		this.priceInput.value = nextProps.selectedTransaction.price
-
-		this.setState({
-			currentTransaction: nextProps.selectedTransaction,
-			selectedTransType: _.find(this.state.allTransTypes, a => a.id == nextProps.selectedTransaction.transactionTypeId),
-			buttonLabel: "Update"
-		})
+	// 	this.dateInput.value = nextProps.selectedTransaction.formattedExecDate
+	// 	this.tickerInput.value = nextProps.selectedTransaction.ticker
+	// 	this.quantInput.value = nextProps.selectedTransaction.quantity
+	// 	this.commInput.value = nextProps.selectedTransaction.commission
+	// 	this.priceInput.value = nextProps.selectedTransaction.price
+	//
+	// 	this.setState({
+	// 		currentTransaction: nextProps.selectedTransaction,
+	// 		selectedTransType: _.find(this.state.allTransTypes, a => a.id == nextProps.selectedTransaction.transactionTypeId),
+	// 		buttonLabel: "Update"
+	// 	})
 	}
 
 
@@ -74,32 +75,32 @@ class TransEdit extends React.Component {
 	init(props) {
 		$( "#execdate" ).datepicker()
 
-		tickerModel.getTickerList()
-			.then((response) => {
-				this.setState({ allTickers: response.data })
-
-				// Set up auto-complete control - from the jQuery UI controls (http://jqueryui.com/)
-				const tickers = this.state.allTickers.map(t => t.symbol)
-				$( "#tickerAuto" ).autocomplete({source: tickers})
-			})
-
-		transTypeModel.getTransTypeList()
-			.then((response) => {
-				//this.setState({ allTransTypes: response.data.map(i => (i.name) )})
-				this.setState({ allTransTypes: response.data, selectedTransType: response.data[0]})
-			})
+		// tickerModel.getTickerList()
+		// 	.then((response) => {
+		// 		this.setState({ allTickers: response.data })
+		//
+		// 		// Set up auto-complete control - from the jQuery UI controls (http://jqueryui.com/)
+		// 		const tickers = this.state.allTickers.map(t => t.symbol)
+		// 		$( "#tickerAuto" ).autocomplete({source: tickers})
+		// 	})
+		//
+		// transTypeModel.getTransTypeList()
+		// 	.then((response) => {
+		// 		//this.setState({ allTransTypes: response.data.map(i => (i.name) )})
+		// 		this.setState({ allTransTypes: response.data, selectedTransType: response.data[0]})
+		// 	})
 	}
 
 	handleSubmit() {
 		const trans = {
 			"id": this.state.currentTransaction.id,
-			"executionDate": this.dateInput.value, 
-			"transactionTypeId": this.state.selectedTransType.id, 
-			"transType": this.state.selectedTransType.name, 
-			"ticker": this.tickerInput.value, 
+			"executionDate": this.dateInput.value,
+			"transactionTypeId": this.state.selectedTransType.id,
+			"transType": this.state.selectedTransType.name,
+			"ticker": this.tickerInput.value,
 			"tickerId": _.find(this.state.allTickers, (i) => i.symbol == this.tickerInput.value).id,
-			"quantity": this.quantInput.value, 
-			"price": this.priceInput.value, 
+			"quantity": this.quantInput.value,
+			"price": this.priceInput.value,
 			"commission": this.commInput.value,
 			"portfolioId": this.props.currentPortfolio.id
 		}
@@ -117,11 +118,13 @@ class TransEdit extends React.Component {
 		this.edittransform.reset()
 		this.setState(
 			{
-				currentTransaction: {},
-				selectedTransType: this.state.allTransTypes[0],
+				// currentTransaction: {},
+				selectedTransType: this.props.transTypes[0],
 				buttonLabel: "Add",
 				mode: "clearing"
 			})
+
+		this.props.cancelTransactionEdit()
 	}
 
 	selectTransType(transType) {
@@ -129,6 +132,28 @@ class TransEdit extends React.Component {
 	}
 
 	render() {
+		// setup ticker field as autocomplete - convert from immutable
+		const tickers = this.props.tickers.toJSON().map(t => t.symbol)
+		$( "#tickerAuto" ).autocomplete({source: tickers})
+
+		// Combo requires js array so convert from immutable list
+		const transTypes = this.props.transTypes.toJSON()
+		//const selectedTransType = transTypes[0]
+
+		if (this.dateInput) this.dateInput.value = this.props.selectedTransaction.formattedExecDate
+		if (this.tickerInput) this.tickerInput.value = this.props.selectedTransaction.ticker
+		if (this.quantInput) this.quantInput.value = this.props.selectedTransaction.quantity
+		if (this.commInput) this.commInput.value = this.props.selectedTransaction.commission
+		if (this.priceInput) this.priceInput.value = this.props.selectedTransaction.price
+
+		// this.setState({
+		const selectedTransType = _.find(transTypes, a => a.id === this.props.selectedTransaction.transactionTypeId)
+		// 	buttonLabel: "Update"
+		// })
+
+		//console.log("tickers", tickers)
+
+		$( "#tickerAuto" ).autocomplete({source: tickers})
 
 		return (
 			<div>
@@ -149,9 +174,9 @@ class TransEdit extends React.Component {
 						{/* Transaction Type */}
 		    		<div className="col-sm-2">
 							<Combobox valueField="id" textField="name"
-								value={this.state.selectedTransType}
+								value={selectedTransType}
 								onChange={val => this.selectTransType(val)}
-								data={this.state.allTransTypes} suggest={true}/>
+								data={transTypes} suggest={true}/>
 		    		</div>
 
 						{/* Ticker */}

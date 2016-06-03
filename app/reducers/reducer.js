@@ -11,8 +11,7 @@ function addItem(state, portfolioId) {
 }
 
 function loadPortfolios(state, portData) {
-  return state
-    .update('portfolios', (portfolios) => portfolios.merge(portData.data))
+  return state.set('portfolios', fromJS(portData.data))
     .set('selectedPortfolio', fromJS(portData.data.find((i) => i.id === 1)))
 }
 
@@ -43,6 +42,17 @@ function reinvCalcChanged(state, reinvCalc) {
   return state.set('reinvCalc', reinvCalc);
 }
 
+function selectTransaction(state, transaction) {
+  return state.set('selectedTransaction', transaction)
+}
+
+function cancelTransactionEdit(state) {
+  return state.set('selectedTransaction', {})
+  // console.log("newState", newState)
+  // console.log("newState json", newState.toJSON())
+  // return newState
+}
+
 export default function(state = Map(), action) {
   switch (action.type) {
     case 'SET_STATE':
@@ -59,6 +69,10 @@ export default function(state = Map(), action) {
       return durationHeldChanged(state, action.duration)
     case 'REINV_CALC_CHANGED':
       return reinvCalcChanged(state, action.reinvCalc)
+    case 'SELECT_TRANSACTION':
+      return selectTransaction(state, action.transaction)
+    case 'CANCEL_TRANSACTION_EDIT':
+      return cancelTransactionEdit(state)
   }
 
   return state;
